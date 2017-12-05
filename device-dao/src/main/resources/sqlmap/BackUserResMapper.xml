@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.device.dao.BackUserResMapper" >
+  <resultMap id="BaseResultMap" type="com.device.api.entity.backrole.BackUserResKey" >
+    <id column="user_id" property="userId" jdbcType="BIGINT" />
+    <id column="res_id" property="resId" jdbcType="BIGINT" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="com.device.api.entity.backrole.BackUserResKey" >
+    delete from back_user_res
+    where user_id = #{userId,jdbcType=BIGINT}
+      and res_id = #{resId,jdbcType=BIGINT}
+  </delete>
+    <select id="selectByUserId" resultType="com.device.api.entity.backrole.BackUserResKey">
+      SELECT *
+      FROM back_user_res
+      WHERE user_id = #{userId}
+    </select>
+    <insert id="insert" parameterType="com.device.api.entity.backrole.BackUserResKey" >
+    insert into back_user_res (user_id, res_id)
+    values (#{userId,jdbcType=BIGINT}, #{resId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.device.api.entity.backrole.BackUserResKey" >
+    insert into back_user_res
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="resId != null" >
+        res_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="resId != null" >
+        #{resId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+</mapper>

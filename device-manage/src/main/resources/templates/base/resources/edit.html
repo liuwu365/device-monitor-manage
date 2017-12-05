@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function () {
+            showSide("资源管理");
+            //提交更新
+            $("#form").validate({
+                debug: true,
+                checkStart: true,
+                errorElement: 'span',
+                errorClass: "_error",
+                focusInvalid: false,
+                ignore: "",
+                submitHandler: function (form) {
+                    $(form).ajaxSubmit(function (res) {
+                        if (res.code == 200) {
+                            layer.msg(res.msg, {time: 2000}, function () {
+                                window.location.href = "/base/resources/list.html";
+                            });
+                        } else {
+                            layer.msg(res.msg, {time: 2000});
+                        }
+                    });
+                },
+                highlight: function (e) {
+                    $(e).closest('.control-group').removeClass('info').addClass('error');
+                },
+                rules: {
+                    resKey: {
+                        required: true
+                    }, name: {
+                        required: true
+                    }, resUrl: {
+                        required: true
+                    }
+                },
+                messages: {
+                    resKey: {
+                        required: "必填"
+                    }, name: {
+                        required: "必填"
+                    }, resUrl: {
+                        required: "必填"
+                    }
+                }
+            });
+        });
+        //]]>
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">网站设置</a><span>></span>
+        <a href="/base/resources/list.html">资源管理</a><span>></span>
+        <em>修改资源</em>
+    </div>
+    <div class="main">
+        <form action="/base/resources/save.json" method="post" class="form-horizontal" id="form">
+            <input type="hidden" name="id" th:value="${BackResources.id}" />
+            <div class="form-group">
+                <label class="col-sm-1 control-label">菜单名称：</label>
+                <div class="col-sm-2">
+                    <input class="form-control" name="name" th:value="${BackResources.name}" />
+                </div>
+                <label class="col-sm-1 control-label">菜单标识：</label>
+                <div class="col-sm-2">
+                    <input class="form-control" name="resKey" th:value="${BackResources.resKey}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">菜单url：</label>
+                <div class="col-sm-2">
+                    <input class="form-control" name="resUrl" th:value="${BackResources.resUrl}" />
+                </div>
+                <label class="col-sm-1 control-label">上级菜单：</label>
+                <div class="col-sm-2">
+                    <select class="form-control" id="parentId" name="parentId">
+                        <option value="0">------顶级目录------</option>
+                        <option th:each="g:${ns}" th:value="${g.id}" th:text="${g.name}"
+                                th:selected="${g.id==BackResources.parentId}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">菜单类型：</label>
+                <div class="col-sm-2">
+                    <select class="form-control" name="type">
+                        <option value="0" th:selected="${BackResources.type==0}">------ 目录 ------</option>
+                        <option value="1" th:selected="${BackResources.type==1}">------ 菜单 ------</option>
+                        <option value="2" th:selected="${BackResources.type==2}">------ 按扭 ------</option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label">优先级：</label>
+                <div class="col-sm-2">
+                    <input class="form-control" name="level"
+                           onkeyup="this.value=this.value.replace(/\D/g,'')"
+                           onafterpaste="this.value=this.value.replace(/\D/g,'')" th:value="${BackResources.level}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">图标：</label>
+                <div class="col-sm-2">
+                    <select class="form-control" name="icon">
+                        <option value="">请选择</option>
+                        <option value="icon-hero" th:selected="${BackResources.icon=='icon-hero'}">icon-hero</option>
+                        <option value="icon-rank" th:selected="${BackResources.icon=='icon-rank'}">icon-rank</option>
+                        <option value="icon-team" th:selected="${BackResources.icon=='icon-team'}">icon-team</option>
+                        <option value="icon-schedule" th:selected="${BackResources.icon=='icon-schedule'}">icon-schedule</option>
+                        <option value="icon-event" th:selected="${BackResources.icon=='icon-event'}">icon-event</option>
+                    </select>
+                </div>
+                <label class="col-sm-1 control-label">菜单描述：</label>
+                <div class="col-sm-2">
+                    <input class="form-control" name="description" th:value="${BackResources.description}" />
+                </div>
+            </div>
+            <div class="col-xs-12 operate">
+                <button class="save btn btn-danger">保存</button>
+                <input type="button" name="cancel" class="btn btn-warning" onclick="cancleGoBack();" th:value="取消" />
+            </div>
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

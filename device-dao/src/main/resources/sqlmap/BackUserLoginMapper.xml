@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.device.dao.BackUserLoginMapper">
+    <resultMap id="BaseResultMap" type="com.device.api.entity.backrole.BackUserLogin">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="BIGINT"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="account_name" property="accountName" jdbcType="VARCHAR"/>
+        <result column="login_time" property="loginTime" jdbcType="TIMESTAMP"/>
+        <result column="login_ip" property="loginIp" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, user_id, type, account_name, login_time, login_ip
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from back_user_login
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM back_user_login
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+    <delete id="deleteByUid">
+        DELETE FROM back_user_login
+        WHERE user_id = #{userId}
+    </delete>
+    <insert id="insert" parameterType="com.device.api.entity.backrole.BackUserLogin">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into back_user_login (user_id, type,account_name, login_time,login_ip)
+        values (#{userId,jdbcType=BIGINT}, #{type,jdbcType=INTEGER}, #{accountName,jdbcType=VARCHAR}, #{loginTime,jdbcType=TIMESTAMP},
+        #{loginIp,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.device.api.entity.backrole.BackUserLogin">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into back_user_login
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="accountName != null">
+                account_name,
+            </if>
+            <if test="loginTime != null">
+                login_time,
+            </if>
+            <if test="loginIp != null">
+                login_ip,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test="accountName != null">
+                #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="loginTime != null">
+                #{loginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="loginIp != null">
+                #{loginIp,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.device.api.entity.backrole.BackUserLogin">
+        update back_user_login
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=INTEGER},
+            </if>
+            <if test="accountName != null">
+                account_name = #{accountName,jdbcType=VARCHAR},
+            </if>
+            <if test="loginTime != null">
+                login_time = #{loginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="loginIp != null">
+                login_ip = #{loginIp,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.device.api.entity.backrole.BackUserLogin">
+        UPDATE back_user_login
+        SET user_id      = #{userId,jdbcType=BIGINT},
+            type         = #{type,jdbcType=INTEGER},
+            account_name = #{accountName,jdbcType=VARCHAR},
+            login_time   = #{loginTime,jdbcType=TIMESTAMP},
+            login_ip     = #{loginIp,jdbcType=VARCHAR}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectPage" resultMap="BaseResultMap" parameterType="com.device.api.entity.Page">
+        select
+        id, user_id,type, account_name, login_time, login_ip
+        from back_user_login
+        <where>
+            <if test="filter.account_name != null and filter.account_name != ''">
+                AND account_name like CONCAT('%', #{filter.account_name}, '%')
+            </if>
+        </where>
+        order by id desc
+    </select>
+    <select id="selectLoginInfo" resultType="com.device.api.entity.backrole.BackUserLogin" parameterType="map">
+        SELECT
+        id, user_id,CASE TYPE WHEN 0 THEN 'web客户端' WHEN 1 THEN 'windows客户端' WHEN 2 THEN 'android客户端' WHEN 3 THEN 'iPhone客户端' END strType,
+        account_name, login_time, login_ip
+        FROM back_user_login
+        <where>
+            <if test="beginDate != null and beginDate!=''">
+                and login_time &gt;= #{beginDate,jdbcType=VARCHAR}
+            </if>
+            <if test="endDate != null and endDate!=''">
+                and login_time &lt;= #{endDate,jdbcType=VARCHAR}
+            </if>
+            <if test="accountName != null and accountName!=''">
+                and account_name = #{accountName,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by login_time desc
+    </select>
+
+</mapper>

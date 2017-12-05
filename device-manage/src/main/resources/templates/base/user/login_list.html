@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="application/javascript">
+        $(function () {
+            showSide("登录日志");
+            layui.use('laydate', function () {
+                var laydate = layui.laydate;
+                laydate.render({elem: '.beginDate', type: 'datetime'});
+                laydate.render({elem: '.endDate', type: 'datetime'});
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">网站设置</a><span>></span>
+        <em>登录日志</em>
+    </div>
+    <div class="main wrapper">
+        <div class="wrap">
+            <form action="/base/user/login/list.html" method="POST" class="form-inline" id="searchForm">
+                <input type="hidden" id="page" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                <div class="form-group">
+                    <input type="text" name="filter['account_name']" class="form-control" placeholder="账号搜索" th:value="${page.filter['account_name']}" />
+                    <button onclick="resetPage();" class="btn btn-default">搜索</button>
+                </div>
+                <div class="pull-right">
+                    <a href="javascript:;" class="btn btn-default" onclick="location.reload();">刷新</a>
+                </div>
+            </form>
+        </div>
+        <div class="container-list">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>用户ID</td>
+                        <td>账号</td>
+                        <td>登录时间</td>
+                        <td>登录IP</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="r:${page.result}">
+                        <td th:text="${r.id}"></td>
+                        <td th:text="${r.userId}"></td>
+                        <td th:text="${r.accountName}"></td>
+                        <td th:text="${#dates.format(r.loginTime, 'yyyy-MM-dd HH:mm')}" th:value="${#dates.format(r.loginTime, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td th:text="${r.loginIp}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="_action">
+                <form name="formId" action="/base/user/loginLogToExcel" class="form-inline" method="post">
+                    <ul>
+                        <li>
+                            <button type="button" class="btn btn-sm btn-info" onclick="_CommonJS.showDiv('timeDiv');">导出Excel</button>
+                        </li>
+                        <li>
+                            <span id="timeDiv" style="display:none;">
+                                <label>账号：</label>
+                                <input class="form-control" type="text" name="accountName" th:value="${userName}" />
+                                <label>时 间：</label>
+                                <input class="beginDate form-control" type="text" name="beginDate" th:value="${beginDate}" placeholder="请选择日期" />
+                                <label>至：</label>
+                    　          <input class="endDate form-control" type="text" name="endDate" th:value="${endDate}" placeholder="请选择日期" />
+                                <button type="submit" name="submit" class="btn btn-sm btn-info" onclick="return confirm('您确认要导出这些记录吗？')">确定</button>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="_CommonJS.closeDiv('timeDiv');">取消</button>
+                            </span>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+            <div class="text-center">
+                <ul id="pageLimit"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

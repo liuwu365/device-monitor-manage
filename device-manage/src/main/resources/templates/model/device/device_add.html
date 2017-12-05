@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function () {
+            $("#device").click();
+            showSide("设备列表");
+            $("#form").validate({
+                debug: true,
+                checkStart: true,
+                errorElement: 'span',
+                errorClass: '_error',
+                focusInvalid: false,
+                ignore: "",
+                rules: {item: {required: true}, deviceUid: {required: true}},
+                messages: {item: {required: "请选择项目"}, deviceUid: {required: "请输入设备UID"}},
+                submitHandler: function (form) {
+                    var longitude = $(".longitude").val();
+                    var latitude = $(".latitude").val();
+                    if (longitude != '') {
+                        var lng = _CommonJS.isLng(parseFloat(longitude));
+                        if (!lng) {
+                            layer.msg("请输入正确的经度数据", {time: 2000});
+                            return;
+                        }
+                    }
+                    if (latitude != '') {
+                        var lat = _CommonJS.isLat(parseFloat(latitude));
+                        if (!lat) {
+                            layer.msg("请输入正确的纬度数据", {time: 2000});
+                            return;
+                        }
+                    }
+                    $(form).ajaxSubmit(function (data) {
+                        var res = JSON.parse(data);
+                        if (res.code == 200) {
+                            layer.msg("操作成功！", {time: 1000}, function () {
+                                window.location.href = "/device/device_list.html";
+                            });
+                        } else {
+                            layer.msg(res.msg, {time: 2000});
+                        }
+                    });
+                },
+                highlight: function (e) {
+                    $(e).closest('.control-group').removeClass('info').addClass('error');
+                }
+            });
+        });
+        //]]>
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">设备管理</a><span>></span>
+        <a href="/device/device_list.html">设备列表</a><span>></span>
+        <em>新增设备</em>
+    </div>
+    <div class="main">
+        <form action="/device/device_add.html" method="post" class="form-horizontal" id="form">
+            <div class="row">
+                <label class="col-xs-1 control-label">项目：</label>
+                <div class="col-xs-2">
+                    <select class="form-control" name="item">
+                        <option value="">请选择</option>
+                        <option value="冷库">冷库</option>
+                        <option value="污水">污水</option>
+                        <option value="水箱">水箱</option>
+                        <option value="锅炉">锅炉</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">设备Uid：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="请输入设备UID" name="deviceUid" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">设备类型：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="请输入设备类型(作用)" name="deviceType" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">设备经度：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="longitude form-control" placeholder="请输入设备经度如：121.486468" name="longitude" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">设备纬度：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="latitude form-control" placeholder="请输入设备纬度如：31.257447" name="latitude" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">设备位置：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="请输入设备位置" name="address" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">设备状态：</label>
+                <div class="col-xs-2">
+                    <select class="form-control" name="status">
+                        <option value="1">请选择</option> <!-- 默认禁用-->
+                        <option value="1">禁用</option>
+                        <option value="2">运行</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-12 operate">
+                <button class="btn btn-danger">保存</button>
+                <input type="button" name="cancel" class="btn btn-warning" onclick="cancleGoBack();" th:value="取消" />
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

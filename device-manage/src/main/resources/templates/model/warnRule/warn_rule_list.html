@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function () {
+            $("#device").click();
+            showSide("报警规则");
+            $(".warnRuleAdd").click(function () {
+                window.location = '/device/warn_rule_add.html';
+            });
+        });
+        //删除报警规则
+        function deleteWarnRule(doc) {
+            layer.confirm("确定删除此规则吗？", {
+                btn: ['确定', '取消']
+            }, function () {
+                $.get("/device/deleteWarnRule/" + doc.id + ".json", function (data) {
+                    if (data.code == 200) {
+                        layer.msg(data.msg, {time: 1000}, function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.msg(data.msg, {time: 2000});
+                    }
+                });
+            }, function () {
+                layer.close();
+            });
+        }
+        //修改状态
+        function setStatus(doc) {
+            var id = doc.getAttribute("id");
+            var status = doc.getAttribute("status");
+            var statusStr = "";
+            var newStatus = "";
+            if (status == '1') {
+                statusStr = '启用';
+                newStatus = 2;
+            } else if (status == '2') {
+                statusStr = '禁用';
+                newStatus = 1;
+            }
+            layer.confirm("确定" + statusStr + "此报警规则吗？", {
+                btn: ['确定', '取消']
+            }, function () {
+                $.post("/device/editWarnRuleStatus.json", {id: id, status: parseInt(newStatus)}, function (data) {
+                    if (data.code == 200) {
+                        layer.msg(data.msg, {time: 1000}, function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.msg(data.msg, {time: 3000});
+                    }
+                });
+            }, function () {
+                layer.close();
+            });
+        }
+        //修改规则
+        function editWarnRule(doc) {
+            var item = doc.getAttribute("item");
+            var value1 = doc.getAttribute("value1");
+            var value2 = doc.getAttribute("value2");
+            var level = doc.getAttribute("level");
+            layer.open({
+                id: 'editWarnRule',
+                type: 1,
+                title: '报警规则修改',
+                skin: 'layui-layer-lan',
+                resize: false,
+                anim: 2,
+                shift: 2,
+                shadeClose: false,
+                area: ['420px', '300px'],
+                content: '<div class="alertDiv form-horizontal">' +
+                '<div class="form-group">' +
+                '<label class="col-sm-4 control-label">阀值下限：</label>' +
+                '<div class="col-sm-8"><input type="number" class="minVale form-control" placeholder="请输入阀值下限" value="' + value1 + '"/></div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label class="col-sm-4 control-label">阀值上限：</label>' +
+                '<div class="col-sm-8"><input type="number" class="maxValue form-control" placeholder="请输入阀值上限" value="' + value2 + '"/></div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '<label class="col-sm-4 control-label">报警级别：</label>' +
+                '<div class="col-sm-8"><input type="number" min="0" max="10" class="level form-control" placeholder="请输入级别,值越大级别越高" value="' + level + '"/></div>' +
+                '</div>' +
+                '</div>',
+                btn: ['确定', '取消'],
+                yes: function () {
+                    var minVale = $(".minVale").val();
+                    var maxValue = $(".maxValue").val();
+                    var level = $(".level").val();
+                    if (!_CommonJS.isDouble(minVale)) {
+                        layer.msg('阀值下限输入错误,输入只能为数字', {time: 1000});
+                        return;
+                    }
+                    if (!_CommonJS.isDouble(maxValue)) {
+                        layer.msg('阀值上限输入错误,输入只能为数字', {time: 1000});
+                        return;
+                    }
+                    if (!_CommonJS.isPositiveNumber(level)) {
+                        layer.msg('报警级别输入错误,输入只能为大于0的数字', {time: 1000});
+                        return;
+                    }
+                    $.ajax({
+                        url: '/device/editWarnRule.json',
+                        method: 'post',
+                        dataType: 'json',
+                        data: {id: doc.id, item: item, minValue: minVale, maxValue: maxValue, level: level},
+                        success: function (res) {
+                            if (res.code == 200) {
+                                layer.msg(res.msg, {time: 1000}, function () {
+                                    window.location.reload();
+                                });
+                            } else {
+                                layer.msg(res.msg, {time: 3000}, function () {
+                                    layer.closeAll();
+                                });
+                            }
+                        }, error: function (e) {
+                            layer.msg('系统错误，请您稍后重试！');
+                        }
+                    });
+                },
+                cancel: function () {
+                }
+            });
+        }
+        //]]>
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">设备管理</a><span>></span>
+        <a href="/device/warn_rule_list.html">报警规则列表</a><span>></span>
+        <em>报警规则列表</em>
+    </div>
+    <div class="main wrapper">
+        <div class="wrap">
+            <form action="/device/warn_rule.html" method="post" class="form-inline" id="searchForm">
+                <input type="hidden" id="page" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                <div>
+                    <a href="javascript:;" class="btn btn-default" onclick="location.reload();">刷新</a>
+                    <a href="#" class="warnRuleAdd btn btn-success">新增</a>
+                </div>
+            </form>
+        </div>
+        <div class="container-list">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td>序号ID</td>
+                        <td>项目</td>
+                        <td>阀值下限</td>
+                        <td>阀值上限</td>
+                        <td>报警级别</td>
+                        <td>状态</td>
+                        <td>创建时间</td>
+                        <td>更新时间</td>
+                        <td>操作</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d:${page.result}">
+                        <td th:text="${d.id}"></td>
+                        <td th:text="${d.item}"></td>
+                        <td th:text="${d.minValue}"></td>
+                        <td th:text="${d.maxValue}"></td>
+                        <td th:text="${d.level+'级'}"></td>
+                        <td>
+                            <a href="#" th:if="${d.status==1}" th:attr="id=${d.id},status=${d.status}" onclick="setStatus(this)" class="label label-default">禁用</a>
+                            <a href="#" th:if="${d.status==2}" th:attr="id=${d.id},status=${d.status}" onclick="setStatus(this)" class="label label-success">启用</a>
+                        </td>
+                        <td th:text="${d.createTime!=null?#dates.format(d.createTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                        <td th:text="${d.updateTime!=null?#dates.format(d.updateTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                        <td>
+                            <a th:id="${d.id}" onclick="deleteWarnRule(this);" class="btn btn-xs btn-danger">删除</a>
+                            <span>|</span>
+                            <a th:id="${d.id}" th:attr="item=${d.item},value1=${d.minValue},value2=${d.maxValue},level=${d.level}" onclick="editWarnRule(this)" class="btn btn-xs btn-info">修改</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center">
+                <ul id="pageLimit"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

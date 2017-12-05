@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function () {
+            showSide("后台IP限制");
+            $(".save").click(function(){
+                $('#form').ajaxSubmit(function (res) {
+                    if (res.code == 200) {
+                        layer.confirm("添加成功，是否继续新增？", {
+                            btn: ['确定', '取消']
+                        }, function () {
+                            window.location.href = "/base/power/add.html";
+                        }, function () {
+                            window.location.href = "/base/power/list.html";
+                        });
+                    } else {
+                        layer.msg(res.msg, {time: 3000});
+                    }
+                });
+            });
+        });
+
+        //]]>
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">网站设置</a><span>></span>
+        <a href="/base/power/list.html">权限管理</a><span></span>
+        <em>添加IP</em>
+    </div>
+    <div class="main">
+        <form action="/base/power/save.json" method="post" class="form-horizontal" id="form" autocomplete="off">
+            <div class="form-group">
+                <label class="col-sm-1 control-label">IP：</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" name="ipAddress" placeholder="请输入IP"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">备注：</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" name="remarks" />
+                </div>
+            </div>
+            <div class="col-xs-12 operate">
+                <input type="button" class="save btn btn-danger"  value="确定" />
+                <input type="button" name="cancel" class="btn btn-warning" value="取消" onclick="cancleGoBack();" />
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

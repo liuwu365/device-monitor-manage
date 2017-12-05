@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function () {
+            $("#vip").click();
+            showSide("操作日志")
+
+            layui.use('laydate', function () {
+                var laydate = layui.laydate;
+                laydate.render({elem: '.beginTime', type: 'datetime'});
+                laydate.render({elem: '.endTime', type: 'datetime'});
+            });
+        });
+
+        //]]>
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">会员管理</a><span>></span>
+        <em>操作记录列表</em>
+    </div>
+    <div class="main wrapper">
+        <div class="wrap">
+            <form class="form-inline" role="form" action="/back/user/operationList.html" id="searchForm">
+                <input type="hidden" name="filter['targetUid']" th:value="${page.filter['targetUid']}" />
+                <div class="wrap">
+                    <label style="width:100px;text-align:right;">操作人：</label>
+                    <input style="width:172px;" type="text" class="form-control" name="filter['operUserName']"
+                           th:value="${page.filter['operUserName']}" placeholder="操作人搜索"/>
+                    <label>日志类型</label>
+                    <select style="width:172px;" class="form-control" name="filter['leavel']">
+                        <option value="">请选择日志</option>
+                        <option value="" th:selected="${page.filter['leavel']==''}">全部日志</option>
+                        <option value="1" th:selected="${page.filter['leavel']=='1'}">系統日志</option>
+                        <option value="2" th:selected="${page.filter['leavel']=='2'}">用户日志</option>
+                    </select>
+                    <label style="width:100px;text-align:right;">操作时间：</label>
+                    <input class="beginTime form-control" type="text" name="filter['beginTime']" placeholder="请选择时间"
+                           th:value="${page.filter['beginTime']}"/>&nbsp;至&nbsp;
+                    <input class="endTime form-control" type="text" name="filter['endTime']" placeholder="请选择时间"
+                           th:value="${page.filter['endTime']}"/>&nbsp;&nbsp;
+                    <button onclick="resetPage();" class="btn btn-default">搜索</button>
+                    <input type="button"  class="btn btn-default" value="返回上一页"
+                           th:style="${page.filter['targetUid']==null? 'display:none' : 'display：inline'}"
+                           onclick="javascript:window.history.back(-1);"/>
+                </div>
+                <input type="hidden" id="page" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage"  th:value="${page.totalPage}" />
+
+            </form>
+        </div>
+        <div class="container-list">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <!--<td>用户名</td>-->
+                        <td>操作人</td>
+                        <td>时间</td>
+                        <td>操作内容</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="u:${page.result}">
+                        <!--<td th:text="${u.userName}" th:value="${u.userName}"></td>-->
+                        <td th:text="${u.createTime!=null?#dates.format(u.createTime,'yyyy-MM-dd HH:mm'):''}"></td>
+                        <td th:text="${u.operUserName}" th:value="${u.operUserName}"></td>
+                        <td class="textLeft" th:text="${u.content}" th:value="${u.content}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="text-center">
+            <ul id="pageLimit"></ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

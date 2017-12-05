@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.device.dao.BackRoleMapper">
+    <resultMap id="BaseResultMap" type="com.device.api.entity.backrole.BackRole">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="state" property="state" jdbcType="BIT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="role_key" property="roleKey" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, state, name, role_key, description
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from back_role
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from back_role
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.device.api.entity.backrole.BackRole">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into back_role (state, name, role_key,
+        description)
+        values (#{state,jdbcType=BIT}, #{name,jdbcType=VARCHAR}, #{roleKey,jdbcType=VARCHAR},
+        #{description,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.device.api.entity.backrole.BackRole">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into back_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="state != null">
+                state,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="roleKey != null">
+                role_key,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="state != null">
+                #{state,jdbcType=BIT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="roleKey != null">
+                #{roleKey,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                #{description,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <insert id="insertContainId">
+        insert into back_role (id,state, name, role_key,description)
+        values (#{id,jdbcType=BIGINT},#{state,jdbcType=BIT}, #{name,jdbcType=VARCHAR}, #{roleKey,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR})
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.device.api.entity.backrole.BackRole">
+        update back_role
+        <set>
+            <if test="state != null">
+                state = #{state,jdbcType=BIT},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="roleKey != null">
+                role_key = #{roleKey,jdbcType=VARCHAR},
+            </if>
+            <if test="description != null">
+                description = #{description,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.device.api.entity.backrole.BackRole">
+    update back_role
+    set state = #{state,jdbcType=BIT},
+      name = #{name,jdbcType=VARCHAR},
+      role_key = #{roleKey,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+    <select id="selectPage" resultMap="BaseResultMap" parameterType="com.device.api.entity.Page">
+        select
+        id, state, name, role_key, description
+        from back_role
+        <where>
+            <if test="filter.name != null and filter.name != ''">
+                AND name = #{filter.name}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT
+            id,
+            state,
+            name,
+            role_key,
+            description
+        FROM back_role
+        ORDER BY id DESC
+    </select>
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM back_role where id=2
+    </select>
+    <select id="selectByName" resultType="com.device.api.entity.backrole.BackRole">
+        SELECT *
+        FROM back_role
+        WHERE name = #{name}
+    </select>
+
+
+</mapper>

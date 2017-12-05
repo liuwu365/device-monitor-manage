@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="text/javascript">
+        $(function () {
+            $("#device").click();
+            showSide("设备列表");
+            $(".deviceAdd").click(function () {
+                window.location = '/device/device_add.html';
+            });
+        });
+        //删除设备
+        function deleteDevice(doc) {
+            layer.confirm("确定删除此设备吗？", {
+                btn: ['确定', '取消']
+            }, function () {
+                $.get("/device/deleteDevice/" + doc.id + ".json", function (data) {
+                    if (data.code == 200) {
+                        layer.msg(data.msg, {time: 1000}, function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.msg(data.msg, {time: 3000});
+                    }
+                });
+            }, function () {
+                layer.close();
+            });
+        }
+        function setDeviceStatus(doc) {
+            console.log(doc);
+            var id = doc.getAttribute("id");
+            var status = doc.getAttribute("status");
+            var statusStr = "";
+            var newStatus = "";
+            if (status == '1') {
+                statusStr = '启用';
+                newStatus = 2;
+            } else if (status == '2') {
+                statusStr = '禁用';
+                newStatus = 1;
+            }
+            layer.confirm("确定" + statusStr + "此设备吗？", {
+                btn: ['确定', '取消']
+            }, function () {
+                $.post("/device/editDeviceStatus.json", {id: id, status: parseInt(newStatus)}, function (data) {
+                    if (data.code == 200) {
+                        layer.msg(data.msg, {time: 1000}, function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.msg(data.msg, {time: 3000});
+                    }
+                });
+            }, function () {
+                layer.close();
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">设备管理</a><span>></span>
+        <a href="/device/device_list.html">设备列表</a><span>></span>
+        <em>设备列表</em>
+    </div>
+    <div class="main wrapper">
+        <div class="wrap">
+            <form action="/device/device_list.html" method="post" class="form-inline" id="searchForm">
+                <div class="form-group">
+                    设备UID： <input type="text" name="filter['deviceUid']" class="form-control" placeholder="设备UID搜索" th:value="${page.filter['deviceUid']}" />
+                    项目：
+                    <select class="form-control" name="filter['item']">
+                        <option value="">请选择</option>
+                        <option value="冷库" th:selected="${page.filter['item']=='冷库'}">冷库</option>
+                        <option value="污水" th:selected="${page.filter['item']=='污水'}">污水</option>
+                        <option value="水箱" th:selected="${page.filter['item']=='水箱'}">水箱</option>
+                        <option value="锅炉" th:selected="${page.filter['item']=='锅炉'}">锅炉</option>
+                    </select>
+                    <button type="submit" onclick="resetPage();" class="btn btn-default">搜索</button>
+                </div>
+                <input type="hidden" id="page" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                <div class="pull-right">
+                    <a href="javascript:;" class="btn btn-default" onclick="location.reload();">刷新</a>
+                    <a href="#" class="deviceAdd btn btn-success">新增</a>
+                </div>
+            </form>
+        </div>
+        <div class="container-list">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td>序号ID</td>
+                        <td>项目</td>
+                        <td>设备Uid</td>
+                        <td>设备类型</td>
+                        <td>设备位置</td>
+                        <td>设备状态</td>
+                        <td>创建时间</td>
+                        <td>更新时间</td>
+                        <td>操作</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d:${page.result}">
+                        <td th:text="${d.id}"></td>
+                        <td th:text="${d.item}"></td>
+                        <td th:text="${d.deviceUid}"></td>
+                        <td th:text="${d.deviceType}"></td>
+                        <td th:text="${d.address}"></td>
+                        <td>
+                            <a href="#" th:if="${d.status==1}" th:attr="id=${d.id},status=${d.status}" onclick="setDeviceStatus(this)" class="label label-default">禁用</a>
+                            <a href="#" th:if="${d.status==2}" th:attr="id=${d.id},status=${d.status}" onclick="setDeviceStatus(this)" class="label label-success">运行</a>
+                        </td>
+                        <td th:text="${d.createTime!=null?#dates.format(d.createTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                        <td th:text="${d.updateTime!=null?#dates.format(d.updateTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                        <td>
+                            <a th:id="${d.id}" onclick="deleteDevice(this);" class="btn btn-xs btn-danger">删除</a>
+                            <span>|</span>
+                            <a th:href="@{/device/loadDevice.html(deviceId=${d.id})}" class="btn btn-xs btn-info">修改</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center">
+                <ul id="pageLimit"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

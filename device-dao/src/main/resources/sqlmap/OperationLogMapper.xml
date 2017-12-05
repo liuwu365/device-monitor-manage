@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.device.dao.OperationLogMapper">
+    <resultMap id="BaseResultMap" type="com.device.api.entity.OperationLog">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="oper_user_id" property="operUserId" jdbcType="BIGINT"/>
+        <result column="target_uid" property="targetUid" jdbcType="BIGINT"/>
+        <result column="oper_user_name" property="operUserName" jdbcType="VARCHAR"/>
+        <result column="ip_address" property="ipAddress" jdbcType="VARCHAR"/>
+        <result column="oper_type" property="operType" jdbcType="INTEGER"/>
+        <result column="chat_id" property="chatId" jdbcType="BIGINT"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, oper_user_id, oper_user_name, ip_address, oper_type, chat_id, content,
+        create_time, target_uid
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from operation_log
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM operation_log
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.device.api.entity.OperationLog">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into operation_log (oper_user_id, oper_user_name,
+        ip_address, oper_type, chat_id,content, create_time,target_uid)
+        values (#{operUserId,jdbcType=BIGINT}, #{operUserName,jdbcType=VARCHAR},
+        #{ipAddress,jdbcType=VARCHAR}, #{operType,jdbcType=INTEGER}, #{chatId,jdbcType=BIGINT},
+        #{content,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},#{target_uid,jdbcType=BIGINT})
+    </insert>
+    <insert id="insertSelective" parameterType="com.device.api.entity.OperationLog">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into operation_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="operUserId != null">
+                oper_user_id,
+            </if>
+            <if test="targetUid != null">
+                target_uid,
+            </if>
+
+            <if test="operUserName != null">
+                oper_user_name,
+            </if>
+            <if test="ipAddress != null">
+                ip_address,
+            </if>
+            <if test="operType != null">
+                oper_type,
+            </if>
+            <if test="chatId != null">
+                chat_id,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="operUserId != null">
+                #{operUserId,jdbcType=BIGINT},
+            </if>
+            <if test="targetUid != null">
+                #{targetUid,jdbcType=BIGINT},
+            </if>
+            <if test="operUserName != null">
+                #{operUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="ipAddress != null">
+                #{ipAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="operType != null">
+                #{operType,jdbcType=INTEGER},
+            </if>
+            <if test="chatId != null">
+                #{chatId,jdbcType=BIGINT},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.device.api.entity.OperationLog">
+        update operation_log
+        <set>
+            <if test="operUserId != null">
+                oper_user_id = #{operUserId,jdbcType=BIGINT},
+            </if>
+            <if test="targetUid != null">
+                target_uid = #{targetUid,jdbcType=BIGINT},
+            </if>
+
+            <if test="operUserName != null">
+                oper_user_name = #{operUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="ipAddress != null">
+                ip_address = #{ipAddress,jdbcType=VARCHAR},
+            </if>
+            <if test="operType != null">
+                oper_type = #{operType,jdbcType=INTEGER},
+            </if>
+            <if test="chatId != null">
+                chat_id = #{chatId,jdbcType=BIGINT},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.device.api.entity.OperationLog">
+        UPDATE operation_log
+        SET oper_user_id   = #{operUserId,jdbcType=BIGINT},
+            oper_user_name = #{operUserName,jdbcType=VARCHAR},
+            ip_address     = #{ipAddress,jdbcType=VARCHAR},
+            oper_type      = #{operType,jdbcType=INTEGER},
+            chat_id        = #{chatId,jdbcType=BIGINT},
+            content        = #{content,jdbcType=VARCHAR},
+            create_time    = #{createTime,jdbcType=TIMESTAMP},
+            target_uid     = #{targetUid,jdbcType=BIGINT}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="selectOperationLog" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM operation_log ol
+        where ol.oper_user_id = #{userId,jdbcType=BIGINT}
+    </select>
+
+    <!--分页查询-->
+    <select id="selectCount" resultType="java.lang.Long">
+        SELECT count(1) FROM operation_log AS c
+        <where>
+            <if test="beginTime!=null || beginTime!='' and  endTime!=null || endTime!='' ">
+                date_format(create_time,'%Y-%m-%d') BETWEEN #{beginTime} AND #{endTime}
+            </if>
+        </where>
+    </select>
+    <select id="selectPage" resultType="com.device.api.entity.OperationLog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM operation_log AS c
+        <where>
+            <if test="filter.beginTime!=null || filter.beginTime!='' and  filter.endTime!=null || filter.endTime!='' ">
+                date_format(create_time,'%Y-%m-%d') BETWEEN #{filter.beginTime} AND #{filter.endTime}
+            </if>
+        </where>
+        ORDER BY c.create_time ASC
+        limit #{offset}, #{limit}
+    </select>
+
+    <select id="selectByOperationLogInfo" resultType="com.device.api.entity.OperationLog" parameterType="Page">
+        SELECT
+        ol.create_time,
+        ol.oper_user_id,
+        ol.oper_user_name,
+        ol.content,
+        ol.target_uid,
+        ui.user_name
+        FROM
+        operation_log ol
+        LEFT JOIN back_user ui ON ol.target_uid=ui.id
+        <where>
+            <if test="filter.targetUid != null and filter.targetUid!=''">
+                and ui.id=#{filter.targetUid}
+            </if>
+            <if test="filter.operUserName != null and filter.operUserName!=''">
+                and ui.oper_user_name like concat('%', #{filter.operUserName}, '%')
+            </if>
+            <if test="filter.beginTime != null and filter.beginTime != ''">
+                AND ol.create_time &gt;= #{filter.beginTime}
+            </if>
+            <if test="filter.endTime != null and filter.endTime != ''">
+                AND ol.create_time &lt;= #{filter.endTime}
+            </if>
+            <if test="filter.leavel == 1">
+                AND ol.target_uid is null
+            </if>
+            <if test="filter.leavel == 2">
+                AND ol.target_uid is not NULL
+            </if>
+
+        </where>
+        ORDER BY ol.create_time desc
+        LIMIT #{offset} ,#{limit}
+    </select>
+
+    <select id="selectOperationLogCount" parameterType="com.device.api.entity.Page" resultType="java.lang.Long">
+        SELECT
+        count(1)
+        FROM
+        operation_log ol
+        LEFT JOIN back_user ui ON ol.target_uid=ui.id
+        <where>
+            <if test="filter.targetUid != null and filter.targetUid!=''">
+                and ui.id=#{filter.targetUid}
+            </if>
+            <if test="filter.operUserName != null and filter.operUserName!=''">
+                and ui.oper_user_name like concat('%', #{filter.operUserName}, '%')
+            </if>
+            <if test="filter.beginTime != null and filter.beginTime != ''">
+                AND ol.create_time &gt;= #{filter.beginTime}
+            </if>
+            <if test="filter.endTime != null and filter.endTime != ''">
+                AND ol.create_time &lt;= #{filter.endTime}
+            </if>
+            <if test="filter.leavel == 1">
+                AND ol.target_uid is null
+            </if>
+            <if test="filter.leavel == 2">
+                AND ol.target_uid is not NULL
+            </if>
+        </where>
+    </select>
+</mapper>

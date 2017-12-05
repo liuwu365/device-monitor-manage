@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="text/javascript">
+        $(function () {
+            showSide("后台IP限制");
+            $(".newadd").click(function () {
+                window.location = '/base/power/add.html';
+            });
+        });
+        function deleteIpAddress(doc) {
+            console.log(doc);
+            layer.confirm("确定删除此IP吗？", {
+                btn: ['确定', '取消']
+            }, function () {
+                $.ajax({
+                    url: "/base/power/deleteIpAddress",
+                    dataType: "json",
+                    type: "get",
+                    data: {id: doc.id},
+                    success: function (res) {
+                        layer.msg(res.msg, {time: 2000}, function () {
+                            window.location.reload();
+                        });
+                    }, error: function () {
+                        layer.msg("服务器异常", {time: 3000});
+                    }
+                });
+            }, function () {
+                layer.close();
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">网站设置</a><span>></span>
+        <a href="/base/power/list.html">权限管理</a><span></span>
+        <em>后台IP限制列表</em>
+    </div>
+    <div class="main wrapper">
+        <div class="wrap">
+            <form action="/base/power/list.html" method="POST" class="form-inline" id="searchForm">
+                <input type="hidden" id="page" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                <div class="pull-right">
+                    <a href="#" class="newadd btn btn-success" >添加IP</a>
+                </div>
+            </form>
+        </div>
+        <div class="container-list" style="margin-top: 40px;">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td>IP地址</td>
+                        <td>添加人</td>
+                        <td>添加时间</td>
+                        <td>备注</td>
+                        <td>操作</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="d:${page.result}">
+                        <td th:text="${d.ipAddress}"></td>
+                        <td th:text="${d.addPeople}"></td>
+                        <td th:text="${#dates.format(d.createTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td th:text="${d.remarks}"></td>
+                        <td>
+                            <a href="#" th:id="${d.id}" th:alt="${d.ipAddress}" onclick="deleteIpAddress(this)" class="btn btn-xs btn-danger">删除</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center">
+                <ul id="pageLimit"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.device.dao.BackUserRoleMapper">
+    <resultMap id="BaseResultMap" type="com.device.api.entity.backrole.BackUserRoleKey">
+        <id column="user_id" property="userId" jdbcType="BIGINT"/>
+        <id column="role_id" property="roleId" jdbcType="BIGINT"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="com.device.api.entity.backrole.BackUserRoleKey">
+        DELETE FROM back_user_role
+        WHERE user_id = #{userId,jdbcType=BIGINT}
+              AND role_id = #{roleId,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.device.api.entity.backrole.BackUserRoleKey">
+        INSERT IGNORE INTO back_user_role (user_id, role_id)
+        VALUES (#{userId,jdbcType=BIGINT}, #{roleId,jdbcType=BIGINT})
+    </insert>
+    <insert id="insertSelective" parameterType="com.device.api.entity.backrole.BackUserRoleKey">
+        insert into back_user_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="roleId != null">
+                role_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="roleId != null">
+                #{roleId,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delByUserId" parameterType="java.lang.Long">
+        DELETE FROM back_user_role
+        WHERE user_id = #{userId,jdbcType=BIGINT}
+    </delete>
+
+    <!--批量插入-->
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into back_user_role (user_id,role_id)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.userId,jdbcType=BIGINT}, #{item.roleId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+
+    <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT
+            user_id,
+            role_id
+        FROM back_user_role
+        WHERE user_id = #{userId}
+    </select>
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.device.dao.BackResRoleMapper">
+    <resultMap id="BaseResultMap" type="com.device.api.entity.backrole.BackResRoleKey">
+        <id column="role_id" property="roleId" jdbcType="BIGINT"/>
+        <id column="res_id" property="resId" jdbcType="BIGINT"/>
+        <id column="user_id" property="userId" jdbcType="BIGINT"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="com.device.api.entity.backrole.BackResRoleKey">
+        DELETE FROM back_res_role
+        WHERE role_id = #{roleId,jdbcType=BIGINT}
+              AND res_id = #{resId,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.device.api.entity.backrole.BackResRoleKey">
+        INSERT INTO back_res_role (role_id, res_id)
+        VALUES (#{roleId,jdbcType=BIGINT}, #{resId,jdbcType=BIGINT})
+    </insert>
+    <insert id="insertSelective" parameterType="com.device.api.entity.backrole.BackResRoleKey">
+        insert into back_res_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">
+                role_id,
+            </if>
+            <if test="resId != null">
+                res_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">
+                #{roleId,jdbcType=BIGINT},
+            </if>
+            <if test="resId != null">
+                #{resId,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+
+    <delete id="delByRoleId" parameterType="java.lang.Long">
+        DELETE FROM back_res_role
+        WHERE role_id = #{roleId,jdbcType=BIGINT} AND user_id = #{userId,jdbcType=BIGINT}
+    </delete>
+    <delete id="delByUserId">
+        DELETE FROM back_res_role
+        WHERE user_id = #{userId,jdbcType=BIGINT}
+    </delete>
+    <!--批量插入-->
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into back_res_role (res_id,role_id,user_id)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.resId,jdbcType=BIGINT}, #{item.roleId,jdbcType=BIGINT}, #{item.userId,jdbcType=BIGINT})
+        </foreach>
+    </insert>
+
+    <select id="selectByRoleId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT
+            res_id,
+            role_id,
+            user_id
+        FROM back_res_role
+        WHERE role_id = #{roleId} AND user_id = #{userId}
+    </select>
+
+    <select id="selectByRes" resultType="com.device.api.entity.backrole.BackUser">
+        SELECT
+            bu.id,
+            bu.user_name
+        FROM back_res_role AS brr
+            LEFT JOIN back_user AS bu ON brr.user_id = bu.id
+        WHERE brr.res_id = #{resId}
+        GROUP BY bu.id
+    </select>
+
+    <select id="selectByResIds" resultType="com.device.api.entity.backrole.BackUser">
+        SELECT
+            bu.id,
+            bu.user_name
+        FROM back_res_role AS brr
+            LEFT JOIN back_user AS bu ON brr.user_id = bu.id
+        WHERE brr.res_id IN (#{resId})
+        GROUP BY bu.id
+    </select>
+
+
+</mapper>

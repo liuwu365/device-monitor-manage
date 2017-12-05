@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function () {
+            $("#device").click();
+            showSide("报警管理");
+
+            var clickTab = 1;
+            var options2 = {
+                bootstrapMajorVersion: 3, //版本
+                currentPage: $("[name='pageWait.page']").val(),
+                totalPages: $("[name='pageWait.totalPage']").val(),
+                alignment: "left",
+                itemTexts: function (type, page, current) {
+                    switch (type) {
+                        case "first":
+                            return "首页";
+                        case "prev":
+                            return "上一页";
+                        case "next":
+                            return "下一页";
+                        case "last":
+                            return "末页";
+                        case "page":
+                            return page;
+                    }
+                },
+                pageUrl: function (type, page, current) {
+                    if (page == current) {
+                        return "javascript:void(0)";
+                    } else {
+                        clickTab = 1;
+                        return "javascript:waitPaging('" + page + "');";
+                    }
+                }
+            };
+            $('.pageWaitLimit').bootstrapPaginator(options2);
+
+            var options3 = {
+                bootstrapMajorVersion: 3, //版本
+                currentPage: $("[name='pageProcess.page']").val(),
+                totalPages: $("[name='pageProcess.totalPage']").val(),
+                alignment: "left",
+                itemTexts: function (type, page, current) {
+                    switch (type) {
+                        case "first":
+                            return "首页";
+                        case "prev":
+                            return "上一页";
+                        case "next":
+                            return "下一页";
+                        case "last":
+                            return "末页";
+                        case "page":
+                            return page;
+                    }
+                },
+                pageUrl: function (type, page, current) {
+                    if (page == current) {
+                        return "javascript:void(0)";
+                    } else {
+                        clickTab = 2;
+                        return "javascript:processPaging('" + page + "');";
+                    }
+                }
+            };
+            $('.pageProcessLimit').bootstrapPaginator(options3);
+
+            var options4 = {
+                bootstrapMajorVersion: 3, //版本
+                currentPage: $("[name='pageFinish.page']").val(),
+                totalPages: $("[name='pageFinish.totalPage']").val(),
+                alignment: "left",
+                itemTexts: function (type, page, current) {
+                    switch (type) {
+                        case "first":
+                            return "首页";
+                        case "prev":
+                            return "上一页";
+                        case "next":
+                            return "下一页";
+                        case "last":
+                            return "末页";
+                        case "page":
+                            return page;
+                    }
+                },
+                pageUrl: function (type, page, current) {
+                    if (page == current) {
+                        return "javascript:void(0)";
+                    } else {
+                        clickTab = 3;
+                        return "javascript:finishPaging('" + page + "');";
+                    }
+                }
+            };
+            $('.pageFinishLimit').bootstrapPaginator(options4);
+
+            if (clickTab == 1) {
+                $("#myTab li").removeClass('active');
+                $(".waitTarget").addClass('active');
+            } else if (clickTab == 2) {
+                $("#myTab li").removeClass('active');
+                $(".processTarget").addClass('active');
+            } else if (clickTab == 3) {
+                $("#myTab li").removeClass('active');
+                $(".finishTarget").addClass('active');
+            }
+        });
+        function waitPaging(page) {
+            $("[name='pageWait.page']").val(page);
+            $(".searchWaitForm").submit();
+        }
+        function processPaging(page) {
+            $("[name='pageProcess.page']").val(page);
+            $(".searchProcessForm").submit();
+        }
+        function finishPaging(page) {
+            $("[name='pageProcess.page']").val(page);
+            $(".searchFinishForm").submit();
+        }
+
+        //处理报警
+        function warnHandle(doc) {
+            var item = doc.getAttribute("item");
+            layer.open({
+                id: 'warnHandle',
+                type: 1,
+                title: "【" + item + '】报警处理',
+                skin: 'layui-layer-lan',
+                resize: false,
+                anim: 2,
+                shift: 2,
+                shadeClose: false,
+                area: ['420px', '228px'],
+                content: '<div class="alertDiv form-horizontal">' +
+                '<div class="form-group">' +
+                '<label class="col-sm-4 control-label">状态：</label>' +
+                '<div class="col-sm-8">' +
+                '<select class="status form-control"><option value="2">处理中</option><option value="3">已处理</option></select>' +
+                '</div>' +
+                '</div>' +
+                '</div>',
+                btn: ['确定', '取消'],
+                yes: function () {
+                    var status = $(".status").val();
+                    if (status == '') {
+                        layer.msg('请选择处理状态', {time: 1000});
+                        return;
+                    }
+                    $.ajax({
+                        url: '/device/editWarnRecord.json',
+                        method: 'post',
+                        dataType: 'json',
+                        data: {id: doc.id, status: status},
+                        success: function (res) {
+                            if (res.code == 200) {
+                                layer.msg(res.msg, {time: 1000}, function () {
+                                    window.location.reload();
+                                });
+                            } else {
+                                layer.msg(res.msg, {time: 2000}, function () {
+                                    layer.closeAll();
+                                });
+                            }
+                        }, error: function (e) {
+                            layer.msg('系统错误，请您稍后重试！');
+                        }
+                    });
+                },
+                cancel: function () {
+                }
+            });
+        }
+        //]]>
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">设备管理</a><span>></span>
+        <a href="/device/device_warn_list.html">报警列表</a><span>></span>
+        <em>报警列表</em>
+    </div>
+    <div class="main wrapper">
+        <div class="wrap">
+            <!--<form action="/device/device_warn_list.html" method="post" class="form-inline" id="searchForm">
+                <input type="hidden" id="status" name="filter['status']" th:value="${page.filter['status']}" />
+                <input type="hidden" id="page" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                <div>
+                    <a href="javascript:;" class="btn btn-default" onclick="location.reload();">刷新</a>
+                </div>
+            </form>-->
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <ul id="myTab" class="nav nav-tabs center-block">
+                    <li class="waitTarget active">
+                        <a href="#waitWarn" data-toggle="tab">待处理</a>
+                    </li>
+                    <li class="processTarget">
+                        <a href="#processWarn" data-toggle="tab">处理中</a>
+                    </li>
+                    <li class="finishTarget">
+                        <a href="#finishWarn" data-toggle="tab">已处理</a>
+                    </li>
+                </ul>
+                <div class="container-list">
+                    <div class="table-responsive">
+                        <div id="myTabContent" class="tab-content">
+                            <div class="tab-pane fade in active" id="waitWarn">
+                                <div th:if="${!#lists.isEmpty(pageWait)}">
+                                    <form action="/device/device_warn_list_1.html" method="post" class="form-inline searchWaitForm">
+                                        <input type="hidden" name="pageWait.page" th:value="${pageWait.page}" />
+                                        <input type="hidden" name="pageWait.totalPage" th:value="${pageWait.totalPage}" />
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <td>序号ID</td>
+                                                <td>项目A</td>
+                                                <td>值</td>
+                                                <td>报警类型</td>
+                                                <td>状态</td>
+                                                <td>创建时间</td>
+                                                <td>更新时间</td>
+                                                <td>操作</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="d:${pageWait.result}">
+                                                <td th:text="${d.id}"></td>
+                                                <td th:text="${d.item}"></td>
+                                                <td th:text="${d.value}"></td>
+                                                <td>
+                                                    <span th:if="${d.warnType==1}" class="label label-danger">偏低</span>
+                                                    <span th:if="${d.warnType==2}" class="label label-danger">偏高</span>
+                                                </td>
+                                                <td>
+                                                    <span th:if="${d.status==1}" class="label label-default">待处理</span>
+                                                    <span th:if="${d.status==2}" class="label label-info">处理中</span>
+                                                    <span th:if="${d.status==3}" class="label label-success">已处理</span>
+                                                </td>
+                                                <td th:text="${d.createTime!=null?#dates.format(d.createTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                                                <td th:text="${d.updateTime!=null?#dates.format(d.updateTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                                                <td>
+                                                    <a th:id="${d.id}" th:attr="item=${d.item}" onclick="warnHandle(this)" class="btn btn-xs btn-info">处理</a>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="text-center">
+                                            <ul class="pageWaitLimit"></ul>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="processWarn">
+                                <div th:if="${!#lists.isEmpty(pageProcess)}">
+                                    <form action="/device/device_warn_list_1.html" method="post" class="form-inline searchProcessForm">
+                                        <input type="hidden" name="pageProcess.page" th:value="${pageProcess.page}" />
+                                        <input type="hidden" name="pageProcess.totalPage" th:value="${pageProcess.totalPage}" />
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <td>序号ID</td>
+                                                <td>项目B</td>
+                                                <td>值</td>
+                                                <td>报警类型</td>
+                                                <td>状态</td>
+                                                <td>处理时间</td>
+                                                <td>创建时间</td>
+                                                <td>更新时间</td>
+                                                <td>操作</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="d:${pageProcess.result}">
+                                                <td th:text="${d.id}"></td>
+                                                <td th:text="${d.item}"></td>
+                                                <td th:text="${d.value}"></td>
+                                                <td>
+                                                    <span th:if="${d.warnType==1}" class="label label-danger">偏低</span>
+                                                    <span th:if="${d.warnType==2}" class="label label-danger">偏高</span>
+                                                </td>
+                                                <td>
+                                                    <span th:if="${d.status==1}" class="label label-default">待处理</span>
+                                                    <span th:if="${d.status==2}" class="label label-info">处理中</span>
+                                                    <span th:if="${d.status==3}" class="label label-success">已处理</span>
+                                                </td>
+                                                <td>
+                                                    <span th:text="${d.handleStartTime!=null?#dates.format(d.handleStartTime,'yyyy-MM-dd HH:mm:ss'):''}"></span><br />
+                                                    <span th:text="${d.handleEndTime!=null?#dates.format(d.handleEndTime,'yyyy-MM-dd HH:mm:ss'):''}"></span>
+                                                </td>
+                                                <td th:text="${d.createTime!=null?#dates.format(d.createTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                                                <td th:text="${d.updateTime!=null?#dates.format(d.updateTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                                                <td>
+                                                    <a th:id="${d.id}" th:attr="item=${d.item}" onclick="warnHandle(this)" class="btn btn-xs btn-info">处理</a>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="text-center">
+                                            <ul class="pageProcessLimit"></ul>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="finishWarn">
+                                <div th:if="${!#lists.isEmpty(pageFinish)}">
+                                    <form action="/device/device_warn_list_1.html" method="post" class="form-inline searchFinishForm">
+                                        <input type="hidden" name="pageFinish.page" th:value="${pageFinish.page}" />
+                                        <input type="hidden" name="pageFinish.totalPage" th:value="${pageFinish.totalPage}" />
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <td>序号ID</td>
+                                                <td>项目C</td>
+                                                <td>值</td>
+                                                <td>报警类型</td>
+                                                <td>状态</td>
+                                                <td>处理时间</td>
+                                                <td>创建时间</td>
+                                                <td>更新时间</td>
+                                                <td>操作</td>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr th:each="d:${pageFinish.result}">
+                                                <td th:text="${d.id}"></td>
+                                                <td th:text="${d.item}"></td>
+                                                <td th:text="${d.value}"></td>
+                                                <td>
+                                                    <span th:if="${d.warnType==1}" class="label label-danger">偏低</span>
+                                                    <span th:if="${d.warnType==2}" class="label label-danger">偏高</span>
+                                                </td>
+                                                <td>
+                                                    <span th:if="${d.status==1}" class="label label-default">待处理</span>
+                                                    <span th:if="${d.status==2}" class="label label-info">处理中</span>
+                                                    <span th:if="${d.status==3}" class="label label-success">已处理</span>
+                                                </td>
+                                                <td>
+                                                    <span th:text="${d.handleStartTime!=null?#dates.format(d.handleStartTime,'yyyy-MM-dd HH:mm:ss'):''}"></span><br />
+                                                    <span th:text="${d.handleEndTime!=null?#dates.format(d.handleEndTime,'yyyy-MM-dd HH:mm:ss'):''}"></span>
+                                                </td>
+                                                <td th:text="${d.createTime!=null?#dates.format(d.createTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                                                <td th:text="${d.updateTime!=null?#dates.format(d.updateTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                                                <td>
+                                                    <a th:id="${d.id}" th:attr="item=${d.item}" onclick="warnHandle(this)" class="btn btn-xs btn-info">处理</a>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="text-center">
+                                            <ul class="pageFinishLimit"></ul>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="text-center">
+                        <ul id="pageLimit"></ul>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

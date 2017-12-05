@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>登录页面</title>
+    <link rel="stylesheet" href="/css/dist/css/bootstrap.css" />
+    <script type="text/javascript" src="/js/lib/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="/js/lib/bootstrap/bootstrap.min.js" />
+    <style type="text/css">
+        body{ width:100%; height:100%; background:url("../images/login-bg.jpg") repeat; background-size:100%; overflow:hidden; }
+        .myContainer{ position:absolute; left:37.5%; top:18.5%; width:auto; height:auto; }
+        .myContainer .main{ position:relative; }
+        .myContainer .main .title{ margin-bottom:20px; width:100%; text-align:center; font-family:"microsoft yahei"; font-size:32px; font-weight:600; color:#FFFFFF; }
+        .myContainer .main .login-box{ padding:35px 36px 32px; width:450px; height:350px; border-radius:3px; background-color:white; }
+        .myContainer .main .login-box .myInput{ width:378px; margin-left:0px; }
+        .myContainer .main .login-box .login-title{ margin-left:12px; font-size:20px; font-family:"microsoft yahei"; color:#8C8C8C; }
+        .myContainer .main .login-box .rember{ display:inline; font-family:"microsoft yahei"; font-size:12px; color:#999; }
+        .myContainer .main .login-box .btn-blue{ height:46px; width:378px; background-color:#0098ff; border-color:#5b93dc; font-family:"microsoft yahei"; font-size:20px; color:#ffffff; }
+        .red{ color:red; }
+    </style>
+</head>
+<body>
+<div class="myContainer">
+    <div class="main">
+        <div class="title">竞技后台管理系统</div>
+        <div class="login-box">
+            <form action="/login.html" method="post" class="form-horizontal" id="form" onsubmit="return check(this)">
+                <div class="form-group">
+                    <div class="login-title ">
+                        请输入登录信息
+                    </div>
+                </div>
+                <div class="myInput form-group">
+                    <div class="col-sm-12 input-group">
+                        <div class="input-group-addon">
+                            <span class="glyphicon glyphicon-user"></span>
+                        </div>
+                        <input type="text" class="form-control" name="accountName" placeholder="登录名" />
+                    </div>
+                </div>
+                <div class="myInput form-group">
+                    <div class="col-sm-12 input-group">
+                        <div class="input-group-addon">
+                            <span class="glyphicon glyphicon-lock"></span>
+                        </div>
+                        <input type="password" class="form-control" name="password" placeholder="密码" />
+                    </div>
+                </div>
+                <label id="msg" th:if="${!#strings.isEmpty(message)}" th:text="${!#strings.isEmpty(message)}?${message}:''" class="red"></label>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="checkbox">
+                            <label class="rember"><input type="checkbox" name="rememberMe" /> 记住用户名和密码</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-block btn-blue">登&nbsp;&nbsp;录</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script type="application/javascript">
+    function check(form) {
+        var username = $.trim(form.elements['accountName'].value),
+            password = $.trim(form.elements['password'].value),
+            $msg = $('#msg');
+        if (username.length == 0) {
+            $msg.html('请输入用户名');
+            return false;
+        }
+        if (password.length == 0) {
+            $msg.html('请输入密码');
+            return false;
+        }
+        return true;
+    }
+</script>
+</html>

@@ -1,0 +1,8 @@
+.idea
+target
+logs
+*.iml
+*.log
+doc
+generatorConfig.xml
+init.properties
