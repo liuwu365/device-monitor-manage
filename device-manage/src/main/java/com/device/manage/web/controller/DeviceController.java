@@ -107,6 +107,7 @@ public class DeviceController {
             if (!CheckUtil.isEmpty(info)) {
                 return Result.failure("设备Uid已存在");
             }
+            deviceInfo.setUpdateTime(new Date());
             int count = deviceService.insertSelective(deviceInfo);
             meta = count > 0 ? Result.success() : Result.failure();
         } catch (Exception e) {

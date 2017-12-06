@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="text/javascript">
+        $(function () {
+            $("#user").click();
+            showSide("用户列表");
+            $(".userAdd").click(function () {
+                window.location = '/user/user_add.html';
+            });
+        });
+        //删除用户
+        function deleteUser(doc) {
+            layer.confirm("确定删除此用户吗？", {
+                btn: ['确定', '取消']
+            }, function () {
+                $.get("/user/deleteUser/" + doc.id + ".json", function (data) {
+                    if (data.code == 200) {
+                        layer.msg(data.msg, {time: 1000}, function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.msg(data.msg, {time: 3000});
+                    }
+                });
+            }, function () {
+                layer.close();
+            });
+        }
+        function setUserStatus(doc) {
+            var id = doc.getAttribute("id");
+            var status = doc.getAttribute("status");
+            var statusStr = "";
+            var newStatus = "";
+            if (status == '1') {
+                statusStr = '启用';
+                newStatus = 2;
+            } else if (status == '2') {
+                statusStr = '禁用';
+                newStatus = 1;
+            }
+            layer.confirm("确定" + statusStr + "此用户吗？", {
+                btn: ['确定', '取消']
+            }, function () {
+                $.post("/user/editUserStatus.json", {id: id, status: parseInt(newStatus)}, function (data) {
+                    if (data.code == 200) {
+                        layer.msg(data.msg, {time: 1000}, function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.msg(data.msg, {time: 3000});
+                    }
+                });
+            }, function () {
+                layer.close();
+            });
+        }
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">用户管理</a><span>></span>
+        <a href="/user/user_list.html">用户列表</a><span>></span>
+        <em>用户列表</em>
+    </div>
+    <div class="main wrapper">
+        <div class="wrap">
+            <form action="/user/user_list.html" method="post" class="form-inline" id="searchForm">
+                <div class="form-group">
+                    用户帐号： <input type="text" name="filter['account']" class="form-control" placeholder="用户帐号搜索" th:value="${page.filter['account']}" />
+                    真实姓名：<input type="text" name="filter['realName']" class="form-control" placeholder="真实姓名搜索" th:value="${page.filter['realName']}" />
+                    <button type="submit" onclick="resetPage();" class="btn btn-default">搜索</button>
+                </div>
+                <input type="hidden" id="page" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                <div class="pull-right">
+                    <a href="javascript:;" class="btn btn-default" onclick="location.reload();">刷新</a>
+                    <a href="#" class="userAdd btn btn-success">新增</a>
+                </div>
+            </form>
+        </div>
+        <div class="container-list">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td>序号ID</td>
+                        <td>帐号</td>
+                        <td>真实姓名</td>
+                        <td>手机号</td>
+                        <td>性别</td>
+                        <td>年龄</td>
+                        <td>状态</td>
+                        <td>酒店</td>
+                        <td>部门</td>
+                        <td>创建时间</td>
+                        <td>更新时间</td>
+                        <td>操作</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="u:${page.result}">
+                        <td th:text="${u.id}"></td>
+                        <td th:text="${u.account}"></td>
+                        <td th:text="${u.realName}"></td>
+                        <td th:text="${u.mobile}"></td>
+                        <td th:text="${u.sex}">
+                            <span th:if="${u.sex==1}" class="label label-default">男</span>
+                            <span th:if="${u.sex==2}" class="label label-success">女</span>
+                        </td>
+                        <td th:text="${u.age}"></td>
+                        <td>
+                            <span th:if="${u.status==1}" th:attr="id=${u.id},status=${u.status}" onclick="setUserStatus(this)" class="label label-default">禁用</span>
+                            <span th:if="${u.status==2}" th:attr="id=${u.id},status=${u.status}" onclick="setUserStatus(this)" class="label label-success">启用</span>
+                        </td>
+                        <td th:text="${u.hotel}"></td>
+                        <td th:text="${u.dept}"></td>
+                        <td th:text="${u.createTime!=null?#dates.format(u.createTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                        <td th:text="${u.updateTime!=null?#dates.format(u.updateTime,'yyyy-MM-dd HH:mm:ss'):''}"></td>
+                        <td>
+                            <a th:id="${u.id}" onclick="deleteUser(this);" class="btn btn-xs btn-danger">删除</a>
+                            <span>|</span>
+                            <a th:href="@{/user/loadUserInfo.html(userId=${u.id})}" class="btn btn-xs btn-info">修改</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center">
+                <ul id="pageLimit"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

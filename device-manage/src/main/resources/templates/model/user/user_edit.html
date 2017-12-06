@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>设备管理后台</title>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function () {
+            $("#user").click();
+            showSide("用户列表");
+            //提交更新
+            $("#form").validate({
+                debug: true,
+                checkStart: true,
+                errorElement: 'span',
+                errorClass: '_error',
+                focusInvalid: false,
+                ignore: "",
+                rules: {account: {required: true}, status: {required: true}, password: {required: true}},
+                messages: {account: {required: "帐号不能为空"}, status: {required: "请选择状态"}, password: {required: "密码不能为空"}},
+                submitHandler: function (form) {
+                    var account = $("input[name='account']").val();
+                    var mobile = $("input[name='mobile']").val();
+                    var age = $("input[name='age']").val();
+                    if (!_CommonJS.checkAccount(account)) {
+                        layer.msg("帐号必须为英文字母、数字、下划线组合,且6~20位", {time: 2000});
+                        return;
+                    }
+                    if (mobile != '') {
+                        if (!_CommonJS.checkMobile(mobile)) {
+                            layer.msg("请输入正确的手机号", {time: 2000});
+                            return;
+                        }
+                    }
+                    if (age != '') {
+                        if (age < 0 || age > 180) {
+                            layer.msg("请输入正确的年龄", {time: 2000});
+                            return;
+                        }
+                    }
+                    $(form).ajaxSubmit(function (res) {
+                        if (res.code == 200) {
+                            layer.msg("操作成功！", {time: 1000}, function () {
+                                window.location.href = "/user/user_list.html";
+                            });
+                        } else {
+                            layer.msg(res.msg, {time: 2000});
+                        }
+                    });
+                },
+                highlight: function (e) {
+                    $(e).closest('.control-group').removeClass('info').addClass('error');
+                }
+            });
+        });
+        //]]>
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">用户管理</a><span>></span>
+        <a href="/device/device_list.html">用户列表</a><span>></span>
+        <em>编辑用户</em>
+    </div>
+    <div class="main">
+        <form action="/user/editUser.json" method="post" class="form-horizontal" id="form">
+            <input type="hidden" name="id" th:value="${user.id}" />
+            <div class="row">
+                <label class="col-xs-1 control-label">帐号：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="请输入用户帐号(唯一)" name="account" th:value="${user.account}" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">密码：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="请输入要更改的新密码" name="password" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">真实姓名：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="请输入真实姓名" name="realName" th:value="${user.realName}" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">手机号：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="请输入手机号" name="mobile" th:value="${user.mobile}" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">性别：</label>
+                <div class="col-xs-2">
+                    <select name="sex" class="form-control">
+                        <option value="1">男</option>
+                        <option value="2">女</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">年龄：</label>
+                <div class="col-xs-2">
+                    <input type="number" class="form-control" placeholder="请输入年龄(0~180)" name="age" th:value="${user.age}" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">状态：</label>
+                <div class="col-xs-2">
+                    <select name="status" class="form-control">
+                        <option value="1" th:selected="${user.status==1}">禁用</option>
+                        <option value="2" th:selected="${user.status==2}">启用</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">酒店：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="请输入酒店" name="hotel" th:value="${user.hotel}" />
+                </div>
+            </div>
+            <div class="row">
+                <label class="col-xs-1 control-label">部门：</label>
+                <div class="col-xs-2">
+                    <input type="text" class="form-control" placeholder="请输入部门" name="dept" th:value="${user.dept}" />
+                </div>
+            </div>
+            <div class="col-xs-12 operate">
+                <button class="btn btn-danger">更新</button>
+                <input type="button" name="cancel" class="btn btn-warning" onclick="cancleGoBack();" th:value="取消" />
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
