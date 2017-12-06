@@ -53,7 +53,7 @@ public class ShiroRealmImpl extends AuthorizingRealm {
 
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-		String accountName = authenticationToken.getPrincipal().toString().toLowerCase();
+		String accountName = authenticationToken.getPrincipal().toString();
 		BackUser backUser = backUserMapper.selectByAccountName(accountName);
 		if (!CheckUtil.isEmpty(backUser)) {
 			if (backUser.getLocked()) {
