@@ -87,7 +87,7 @@
         <pagehelper.version>4.0.0</pagehelper.version>
         <jeecg.version>2.3.1</jeecg.version>
         <logback.version>1.1.2</logback.version>
-        <jdk.version>1.7</jdk.version>
+        <jdk.version>1.8</jdk.version>
     </properties>
     <dependencies>
         <dependency>
