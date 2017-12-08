@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>device-monitor-manage</groupId>
     <artifactId>device-manage</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>device-manage</name>
     <url>http://maven.apache.org</url>
@@ -553,7 +553,16 @@
 
 
     <build>
+        <!-- pojectName就是打包后的名称：pojectName.war -->
+        <finalName>device-manage</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warName>device-manage</warName>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

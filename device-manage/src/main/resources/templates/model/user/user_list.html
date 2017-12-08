@@ -118,8 +118,8 @@
                         </td>
                         <td th:text="${u.age}"></td>
                         <td>
-                            <span th:if="${u.status==1}" th:attr="id=${u.id},status=${u.status}" onclick="setUserStatus(this)" class="label label-default">禁用</span>
-                            <span th:if="${u.status==2}" th:attr="id=${u.id},status=${u.status}" onclick="setUserStatus(this)" class="label label-success">启用</span>
+                            <a href="#" th:if="${u.status==1}" th:attr="id=${u.id},status=${u.status}" onclick="setUserStatus(this)" class="label label-default">禁用</a>
+                            <a href="#" th:if="${u.status==2}" th:attr="id=${u.id},status=${u.status}" onclick="setUserStatus(this)" class="label label-success">启用</a>
                         </td>
                         <td th:text="${u.hotel}"></td>
                         <td th:text="${u.dept}"></td>
