@@ -76,6 +76,8 @@ $(document).ready(function () {
                     layer.msg(res.msg, {time: 3000}, function () {
                         window.location.reload();
                     });
+                } else {
+                    layer.msg(res.msg, {time: 2000});
                 }
             });
         },
@@ -265,7 +267,8 @@ var _CommonJS = {
      * 验证是否为经度  经度范围：-180.0000~180.0000;
      */
     isLng: function (value) {
-        var reg = /^(((\d|[1-9]\d|1[1-7]\d|0)\.\d{0,10})|(\d|[1-9]\d|1[1-7]\d|0{1,3})|180\.0{0,10}|180)$/;;
+        var reg = /^(((\d|[1-9]\d|1[1-7]\d|0)\.\d{0,10})|(\d|[1-9]\d|1[1-7]\d|0{1,3})|180\.0{0,10}|180)$/;
+        ;
         return reg.test(value);
     },
     /**
