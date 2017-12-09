@@ -347,6 +347,7 @@ public class DeviceController {
     @RequestMapping(value = "/device_warn_list")
     public String deviceWarnList(Model model, Page<DeviceWarnRecord> page) {
         try {
+            //默认查询待处理的报警信息
             if (CheckUtil.isEmpty(page.getFilter().get("status"))) {
                 page.getFilter().put("status", WarnRecordStatus.WAIT.getCode());
             }

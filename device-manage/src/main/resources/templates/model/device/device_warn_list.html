@@ -104,6 +104,7 @@
                         <td>项目</td>
                         <td>值</td>
                         <td>报警类型</td>
+                        <td>告警等级</td>
                         <td>状态</td>
                         <td>处理时间</td>
                         <td>创建时间</td>
@@ -120,6 +121,7 @@
                             <span th:if="${d.warnType==1}" class="label label-danger">偏低</span>
                             <span th:if="${d.warnType==2}" class="label label-danger">偏高</span>
                         </td>
+                        <td th:text="${d.level+'级'}"></td>
                         <td>
                             <span th:if="${d.status==1}" class="label label-default">待处理</span>
                             <span th:if="${d.status==2}" class="label label-info">处理中</span>
