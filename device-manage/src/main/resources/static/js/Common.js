@@ -148,7 +148,7 @@ function resetPage() {
     $("#page").val(1);
 }
 //取消按钮到上个页面
-function cancleGoBack() {
+function cancelGoBack() {
     window.history.back();
 }
 //重置按钮

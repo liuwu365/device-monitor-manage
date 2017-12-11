@@ -4,7 +4,6 @@ import com.device.api.entity.Page;
 import com.device.api.entity.Result;
 import com.device.api.entity.device.DeviceInfo;
 import com.device.api.entity.device.DeviceWarnRecord;
-import com.device.api.entity.device.DeviceWarnRecordTab;
 import com.device.api.entity.device.DeviceWarnRule;
 import com.device.api.enums.ResultCode;
 import com.device.api.enums.WarnRecordStatus;
@@ -200,7 +199,7 @@ public class DeviceController {
     public Result warnRuleAdd(DeviceWarnRule warnRule) {
         Result result = new Result();
         try {
-            if (warnRule.getMinValue() <= warnRule.getMaxValue()) {
+            if (warnRule.getMaxValue().doubleValue() <= warnRule.getMinValue().doubleValue()) {
                 return Result.failure("阀值上限不能小于等于阀值下限");
             }
             DeviceWarnRule exist = warnRuleService.selectByItemAndLevel(warnRule.getItem(), warnRule.getLevel());
@@ -256,12 +255,8 @@ public class DeviceController {
             if (CheckUtil.isEmpty(id)) {
                 return Result.failure(ResultCode.BAD_REQUEST.getCode(), ResultCode.BAD_REQUEST.getDesc());
             }
-            if (minValue <= maxValue) {
+            if (maxValue <= minValue) {
                 return Result.failure("阀值上限不能小于等于阀值下限");
-            }
-            DeviceWarnRule exist = warnRuleService.selectByItemAndLevel(item, level);
-            if (!CheckUtil.isEmpty(exist)) {
-                return Result.failure("已经存在一个该类型该级别的报警规则了");
             }
             //查询它的小一级的值范围
             DeviceWarnRule target = warnRuleService.selectByItemAndLevel(item, level - 1);
@@ -274,7 +269,6 @@ public class DeviceController {
             warnRule.setId(id);
             warnRule.setMinValue(minValue);
             warnRule.setMaxValue(maxValue);
-            warnRule.setLevel(level);
             warnRule.setUpdateTime(new Date());
             int count = warnRuleService.updateByPrimaryKeySelective(warnRule);
             result = count > 0 ? Result.success() : Result.failure();
@@ -301,7 +295,7 @@ public class DeviceController {
     }
 
     //-------------------------------------------------------- 设备报警列表 -------------------------------------------------------------
-    @RequestMapping(value = "/device_warn_list_1")
+    /*@RequestMapping(value = "/device_warn_list_1")
     public String deviceWarnList1(Model model, DeviceWarnRecordTab tab) {
         try {
             Page<DeviceWarnRecord> pageWait = new Page<>();
@@ -335,14 +329,11 @@ public class DeviceController {
             model.addAttribute("pageWait", tab.getPageWait());
             model.addAttribute("pageProcess", tab.getPageProcess());
             model.addAttribute("pageFinish", tab.getPageFinish());
-
-            //logger.info("select warn device_list={}", gson.toJson(page));
         } catch (Exception e) {
             e.printStackTrace();
-            //logger.error("device_warn_list error|page={}|ex={}", gson.toJson(page), ErrorWriterUtil.writeError(e));
         }
         return warnRecordListPage1;
-    }
+    }*/
 
     @RequestMapping(value = "/device_warn_list")
     public String deviceWarnList(Model model, Page<DeviceWarnRecord> page) {
@@ -374,7 +365,7 @@ public class DeviceController {
             warnRecord.setStatus((byte) status);
             if (status == WarnRecordStatus.PROCESS.getCode()) {
                 warnRecord.setHandleStartTime(new Date());
-            } else if (status == WarnRecordStatus.FINISH.getCode()) {
+            } else if (status == WarnRecordStatus.FINISH_HUMAN.getCode()) {
                 warnRecord.setHandleEndTime(new Date());
             }
             warnRecord.setUpdateTime(new Date());

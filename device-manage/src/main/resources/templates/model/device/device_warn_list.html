@@ -125,7 +125,8 @@
                         <td>
                             <span th:if="${d.status==1}" class="label label-default">待处理</span>
                             <span th:if="${d.status==2}" class="label label-info">处理中</span>
-                            <span th:if="${d.status==3}" class="label label-success">已处理</span>
+                            <span th:if="${d.status==3}" class="label label-success">人工已处理</span>
+                            <span th:if="${d.status==4}" class="label label-success">系统已处理</span>
                         </td>
                         <td>
                             <span th:text="${d.handleStartTime!=null?#dates.format(d.handleStartTime,'yyyy-MM-dd HH:mm:ss'):''}"></span><br />

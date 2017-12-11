@@ -72,7 +72,7 @@
             layer.open({
                 id: 'editWarnRule',
                 type: 1,
-                title: '报警规则修改',
+                title: item + '报警规则修改',
                 skin: 'layui-layer-lan',
                 resize: false,
                 anim: 2,
@@ -88,16 +88,15 @@
                 '<label class="col-sm-4 control-label">阀值上限：</label>' +
                 '<div class="col-sm-8"><input type="number" class="maxValue form-control" placeholder="请输入阀值上限" value="' + value2 + '"/></div>' +
                 '</div>' +
-                '<div class="form-group">' +
-                '<label class="col-sm-4 control-label">报警级别：</label>' +
-                '<div class="col-sm-8"><input type="number" min="0" max="10" class="level form-control" placeholder="请输入级别,值越大级别越高" value="' + level + '"/></div>' +
-                '</div>' +
+//                '<div class="form-group">' +
+//                '<label class="col-sm-4 control-label">报警级别：</label>' +
+//                '<div class="col-sm-8"><input type="number" min="0" max="10" class="level form-control" placeholder="请输入级别,值越大级别越高" value="' + level + '"/></div>' +
+//                '</div>' +
                 '</div>',
                 btn: ['确定', '取消'],
                 yes: function () {
                     var minVale = $(".minVale").val();
                     var maxValue = $(".maxValue").val();
-                    var level = $(".level").val();
                     if (!_CommonJS.isDouble(minVale)) {
                         layer.msg('阀值下限输入错误,输入只能为数字', {time: 1000});
                         return;
