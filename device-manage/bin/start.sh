@@ -51,7 +51,7 @@ fi
 
 echo "starting device-manage server..."
 
-java -Dfile.encoding=UTF-8 -Dyt.env=${ENVIRONMENT} ${GCARGS} -XX:+UseG1GC -XX:+PrintGCDetails -Xloggc:${GC_LOG_DIR}/gc.log.${nowday} -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=logs/gamble-manage.dump -classpath ${CLASSPATH} com.lottery.gamble.manage.StartApplication > logs/console.log 2>&1 &
+java -Dfile.encoding=UTF-8 -Dyt.env=${ENVIRONMENT} ${GCARGS} -XX:+UseG1GC -XX:+PrintGCDetails -Xloggc:${GC_LOG_DIR}/gc.log.${nowday} -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=logs/device-monitor-manage.dump -classpath ${CLASSPATH} com.device.manage.StartApplication > logs/console.log 2>&1 &
 
 PID=$!
 echo ${PID} > logs/app.pid
