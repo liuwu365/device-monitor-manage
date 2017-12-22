@@ -5,16 +5,19 @@ import com.device.api.entity.Result;
 import com.device.api.entity.device.DeviceInfo;
 import com.device.api.entity.device.DeviceWarnRecord;
 import com.device.api.entity.device.DeviceWarnRule;
+import com.device.api.enums.DeviceStatus;
 import com.device.api.enums.ResultCode;
 import com.device.api.enums.WarnRecordStatus;
 import com.device.api.uitls.CheckUtil;
 import com.device.api.uitls.ErrorWriterUtil;
+import com.device.manage.core.utils.HttpUtil;
 import com.device.manage.web.service.device.DeviceService;
 import com.device.manage.web.service.device.WarnRecordService;
 import com.device.manage.web.service.device.WarnRuleService;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +25,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 设备管理控制器
@@ -33,6 +38,8 @@ import java.util.List;
 public class DeviceController {
     private static final Logger logger = LoggerFactory.getLogger(DeviceController.class);
     private static final Gson gson = new Gson();
+    @Value("${h5Url}")
+    private String h5Url;
 
     @Resource
     private DeviceService deviceService;
@@ -109,6 +116,10 @@ public class DeviceController {
             deviceInfo.setUpdateTime(new Date());
             int count = deviceService.insertSelective(deviceInfo);
             meta = count > 0 ? Result.success() : Result.failure();
+            //新加设备启用,则开启订阅
+            if (deviceInfo.getStatus() == DeviceStatus.RUN.getCode()) {
+                deviceSubscribe(deviceInfo.getDeviceUid());
+            }
         } catch (Exception e) {
             logger.error("add device error|ex={}", ErrorWriterUtil.writeError(e).toString());
             meta = Result.error();
@@ -124,6 +135,9 @@ public class DeviceController {
         try {
             int count = deviceService.deleteByPrimaryKey(id);
             meta = count > 0 ? Result.success() : Result.failure();
+            //删除设备，则取消订阅
+            DeviceInfo device = deviceService.selectByPrimaryKey(id);
+            deviceUnSubscribe(device.getDeviceUid());
         } catch (Exception e) {
             logger.error("deleteDevice id={}|error={}", id, ErrorWriterUtil.writeError(e).toString());
             meta = Result.error();
@@ -148,11 +162,51 @@ public class DeviceController {
             deviceInfo.setUpdateTime(new Date());
             int count = deviceService.updateByPrimaryKeySelective(deviceInfo);
             result = count > 0 ? Result.success() : Result.failure();
+            //设备禁用则取消订阅；启用则开启订阅
+            if (deviceInfo.getStatus().intValue() == DeviceStatus.STOP.getCode()) {
+                deviceUnSubscribe(deviceInfo.getDeviceUid());
+            } else if (deviceInfo.getStatus().intValue() == DeviceStatus.RUN.getCode()) {
+                deviceSubscribe(deviceInfo.getDeviceUid());
+            }
         } catch (Exception e) {
             logger.error("edit device error|ex={}", ErrorWriterUtil.writeError(e).toString());
             result = Result.error();
         }
         return result;
+    }
+
+    //设备禁用，则取消订阅
+    private void deviceUnSubscribe(String deviceUid) {
+        try {
+            if (CheckUtil.isEmpty(deviceUid)) {
+                logger.info("设备禁用请求取消订阅时，设备Uid不能为空");
+                return;
+            }
+            String url = h5Url + "/interface/deviceUnSubscribe.json";
+            Map map = new HashMap();
+            map.put("deviceUid", deviceUid);
+            String s = HttpUtil.post(url, map);
+            logger.info("设备禁用，则取消订阅{}", s);
+        } catch (Exception e) {
+            logger.error("设备禁用,取消订阅失败error={}", ErrorWriterUtil.writeError(e));
+        }
+    }
+
+    //设备启用，则开始订阅
+    private void deviceSubscribe(String deviceUid) {
+        try {
+            if (CheckUtil.isEmpty(deviceUid)) {
+                logger.info("设备启用请求取消订阅时，设备Uid不能为空");
+                return;
+            }
+            String url = h5Url + "/interface/deviceSubscribe.json";
+            Map map = new HashMap();
+            map.put("deviceUid", deviceUid);
+            String s = HttpUtil.post(url, map);
+            logger.info("设备启用，则取消订阅{}", s);
+        } catch (Exception e) {
+            logger.error("设备启用,启用订阅失败error={}", ErrorWriterUtil.writeError(e));
+        }
     }
 
     //编辑设备操作(启用或禁用)
@@ -166,6 +220,13 @@ public class DeviceController {
             deviceInfo.setStatus((short) status);
             deviceInfo.setUpdateTime(new Date());
             int count = deviceService.updateByPrimaryKeySelective(deviceInfo);
+            //设备禁用则取消订阅；启用则开启订阅
+            DeviceInfo device = deviceService.selectByPrimaryKey(id);
+            if (status == DeviceStatus.STOP.getCode()) {
+                deviceUnSubscribe(device.getDeviceUid());
+            } else if (status == DeviceStatus.RUN.getCode()) {
+                deviceSubscribe(device.getDeviceUid());
+            }
             result = count > 0 ? Result.success() : Result.failure();
         } catch (Exception e) {
             logger.error("edit device status error|ex={}", ErrorWriterUtil.writeError(e).toString());
