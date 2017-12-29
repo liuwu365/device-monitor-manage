@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
       layout:decorator="model/head">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
     <title>地图展示</title>
-    <script type="text/javascript">
-        //<![CDATA[
-        $(function () {
-            $("#device").click();
-            showSide("地图管理");
-        });
-        //]]>
-    </script>
+    <script type="text/javascript" th:src="@{http://api.map.baidu.com/api?v=2.0&amp;ak=prX8qDNG4ZNwuspRmHXobffz}" />
+    <script type="text/javascript" src="/js/DateUtil.js" />
+    <style type="text/css">
+        #allmap{ position:absolute; width:100%; height:100%; }
+        #allmap label{ max-width:none; }
+        #allmap div{ box-sizing:initial; }
+    </style>
 </head>
 <body>
 <div class="container" layout:fragment="content">
@@ -22,7 +22,91 @@
         <a href="/device/device_map.html">地图管理</a><span>></span>
         <em>地图展示</em>
     </div>
-    <iframe style="position:fixed;width:88.5%;height: 91%;" frameborder="0" marginheight="0" marginwidth="0" scrolling="no" src="/device/map.html"></iframe>
+    <!--<iframe style="position:fixed;width:88.5%;height: 91%;" frameborder="0" marginheight="0" marginwidth="0" scrolling="no" src="/device/map.html"></iframe>-->
+    <div id="allmap"></div>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function () {
+            $("#device").click();
+            showSide("地图管理");
+            // 百度地图API功能
+            var map = new BMap.Map("allmap");
+            var point = new BMap.Point(116.404081, 39.910098); //默认地图定位(天安门)
+            //在地图上添加一些比例尺等控件
+            map.addControl(new BMap.NavigationControl());
+            map.addControl(new BMap.ScaleControl());
+            map.addControl(new BMap.OverviewMapControl());
+            map.addControl(new BMap.MapTypeControl());   //添加地图类型控件
+            map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+            map.centerAndZoom(point, 15);
+            $.ajax({
+                type: "post",
+                url: "/device/deviceMapData.html",
+                dataType: "json",
+                success: function (res) {
+                    console.log(res);
+                    var device_point_arr = new Array(); //在地图上添加点,加载所有设备的物理位置
+                    if (res != null && res != '' && res.code == 200) {
+                        var marker, label, point;
+                        var data = res.t;
+                        for (var i in data) {
+                            if (data[i].longitude != "" && data[i].latitude != "") {
+                                var iconImg = "";
+                                if (data[i].status == '1') {
+                                    iconImg = "../images/anti_theft_grey.png";
+                                } else if (data[i].status == '2') {
+                                    iconImg = "../images/anti_theft_green.png";
+                                } else {
+                                    iconImg = "../images/anti_theft_grey.png";
+                                }
+                                point = new BMap.Point(parseFloat(data[i].longitude), parseFloat(data[i].latitude));
+                                device_point_arr.push(point); //注意此处用下标会出错device_point_arr[i]
+                                marker = new BMap.Marker(point, {icon: new BMap.Icon(iconImg, new BMap.Size(30, 30)), offset: new BMap.Size(6, -6)});
+                                label = new BMap.Label(data[i].deviceUid, {offset: new BMap.Size(17, 0)});
+                                marker.setLabel(label);
+                                map.addOverlay(marker);
+                                (function () { //闭包
+                                    var point1 = point;
+                                    var item = data[i].item;
+                                    var device_uid = data[i].deviceUid;
+                                    var device_type = data[i].deviceType;
+                                    var device_lg = data[i].longitude;
+                                    var device_lt = data[i].latitude;
+                                    var device_status = data[i].status;
+                                    var device_addTime = data[i].createTime;
+                                    if (device_status == '1') {
+                                        device_status = "<label style=\"color:red;\">禁用</label>";
+                                    } else if (device_status == '2') {
+                                        device_status = "<label style=\"color:green;\">运行</label>";
+                                    } else {
+                                        device_status = "<label style=\"color:yellow;\">未知</label>";
+                                    }
+                                    //信息窗口
+                                    var opts = {title: "<div style='font-size:12px;font-weight:bold;border-bottom:1px solid grey;'>设备信息</div>", height: 200,} //信息窗口标题
+                                    var content = "<div style='font-size:12px;line-height:25px;'>" +
+                                        "<span>设备所属项目 ：</span>" + item + "<br/>" +
+                                        "<span>设备Uid ：</span>" + device_uid + "<br/>" +
+                                        "<span>设备类型 ：</span>" + device_type + "<br/>" +
+                                        "<span>设备经纬度：</span>" + device_lg + "," + device_lt + "<br/>" +
+                                        "<span>设备状态：</span>" + device_status + "<br/>" +
+                                        "<span>添加时间：</span>" + new Date(device_addTime).pattern("yyyy-MM-dd HH:mm:ss") + "<br/>" +
+                                        "</div>";
+                                    var infoWindow1 = new BMap.InfoWindow(content, opts); //创建信息窗口
+                                    marker.addEventListener("click", function () {
+                                        this.openInfoWindow(infoWindow1);
+                                    });
+                                })();
+                            }
+                        }
+                        map.setViewport(device_point_arr);
+                    } else {
+                        alert("暂无数据！");
+                    }
+                }
+            });
+        });
+        //]]>
+    </script>
 </div>
 </body>
 </html>

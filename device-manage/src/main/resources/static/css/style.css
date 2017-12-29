@@ -142,11 +142,4 @@ a:focus{ outline:0; outline:0 }
 .back-foot{ width:100%; background:#1e242b; }
 .back-foot p{ margin:0 auto; text-align:center; width:735px; color:#fff; height:60px; line-height:60px; }
 /*通知栏*/
-.notice{
-    max-height:200px;
-    height:200px;
-    overflow-x:hidden;
-    overflow-y:auto;
-    margin:0px;
-    padding:0px;
-}
+.notice{ max-height:200px; height:200px; overflow-x:hidden; overflow-y:auto; margin:0px; padding:0px; }
