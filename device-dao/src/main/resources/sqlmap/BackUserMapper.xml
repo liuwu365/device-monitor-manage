@@ -177,12 +177,12 @@
             credentials_salt,
             locked
         FROM back_user
-        WHERE account_name = #{accountName}
+        WHERE binary account_name = #{accountName}
     </select>
     <select id="selectByUserName" resultType="com.device.api.entity.backrole.BackUser">
         SELECT *
         FROM back_user
-        WHERE user_name = #{userName}
+        WHERE binary user_name = #{userName}
     </select>
 
 </mapper>

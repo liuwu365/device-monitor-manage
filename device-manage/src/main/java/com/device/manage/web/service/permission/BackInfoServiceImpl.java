@@ -6,6 +6,7 @@ import com.device.api.entity.backrole.BackUser;
 import com.device.api.entity.backrole.BackUserRoleKey;
 import com.device.api.uitls.CheckUtil;
 import com.device.dao.BackRoleMapper;
+import com.device.dao.BackUserMapper;
 import com.device.dao.BackUserRoleMapper;
 import com.device.manage.core.constant.BasicConstant;
 import com.google.gson.Gson;
@@ -27,12 +28,35 @@ public class BackInfoServiceImpl implements BackInfoService {
     @Resource
     private BackUserRoleMapper backUserRoleMapper;
     @Resource
+    private BackUserMapper backUserMapper;
+    @Resource
     private BackUserService backUserService;
 
     @Override
     @Transactional
     public Result saveUserInfo(BackUser backUser, String roles) {
         try {
+            if (CheckUtil.isEmpty(backUser.getId())) { //新增
+                if (!CheckUtil.isEmpty(backUser.getUserName())) {
+                    BackUser target = backUserMapper.selectByUserName(backUser.getUserName());
+                    if (!CheckUtil.isEmpty(target)) {
+                        return Result.failure("用户名已存在");
+                    }
+                }
+                if (!CheckUtil.isEmpty(backUser.getAccountName())) {
+                    BackUser target = backUserMapper.selectByAccountName(backUser.getAccountName());
+                    if (!CheckUtil.isEmpty(target)) {
+                        return Result.failure("帐号已存在");
+                    }
+                }
+            } else { //修改
+                if (!CheckUtil.isEmpty(backUser.getUserName())) {
+                    BackUser target = backUserMapper.selectByUserName(backUser.getUserName());
+                    if (!CheckUtil.isEmpty(target)) {
+                        return Result.failure("用户名已存在");
+                    }
+                }
+            }
             //检测有没有为2的默认角色，没有添加一个默认Id为2的角色(1超级管理员拥有所有权限)
             BackRole backRole = new BackRole();
             int count = backRoleMapper.selectCount();
