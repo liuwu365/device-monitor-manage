@@ -328,18 +328,90 @@ public class CommonUtil {
         }
     }
 
+    /**
+     * 判断一个字符串是否都为数字
+     *
+     * @param strNum
+     * @return
+     */
+    public static boolean isDigit(String strNum) {
+        Pattern pattern = Pattern.compile("[0-9]{1,}");
+        Matcher matcher = pattern.matcher((CharSequence) strNum);
+        return matcher.matches();
+    }
+
+    /**
+     * 截取数字
+     *
+     * @param content
+     * @return
+     */
+    public static String getNumbers(String content) {
+        Pattern pattern = Pattern.compile("\\d+");
+        Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            return matcher.group(0);
+        }
+        return "";
+    }
+
+    /**
+     * 截取非数字
+     *
+     * @param content
+     * @return
+     */
+    public static String splitNotNumber(String content) {
+        Pattern pattern = Pattern.compile("\\D+");
+        Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            return matcher.group(0);
+        }
+        return "";
+    }
+
+    /**
+     * 提取一个字符串中的整数和小数部分
+     */
+    public static String getNumbers2(String str) {
+        // 需要取整数和小数的字符串
+        // 控制正则表达式的匹配行为的参数(小数)
+        Pattern p = Pattern.compile("(\\d+\\.\\d+)");
+        //Matcher类的构造方法也是私有的,不能随意创建,只能通过Pattern.matcher(CharSequence input)方法得到该类的实例.
+        Matcher m = p.matcher(str);
+        //m.find用来判断该字符串中是否含有与"(\\d+\\.\\d+)"相匹配的子串
+        if (m.find()) {
+            //如果有相匹配的,则判断是否为null操作
+            //group()中的参数：0表示匹配整个正则，1表示匹配第一个括号的正则,2表示匹配第二个正则,在这只有一个括号,即1和0是一样的
+            str = m.group(1) == null ? "" : m.group(1);
+        } else {
+            //如果匹配不到小数，就进行整数匹配
+            p = Pattern.compile("(\\d+)");
+            m = p.matcher(str);
+            if (m.find()) {
+                //如果有整数相匹配
+                str = m.group(1) == null ? "" : m.group(1);
+            } else {
+                //如果没有小数和整数相匹配,即字符串中没有整数和小数，就设为空
+                str = "";
+            }
+        }
+        return str;
+    }
+
     public static void main(String[] args) {
         //System.out.println(removeEleByStr("160,95,94,23,58", "160"));
         //System.out.println(isContainsEleByStr("1", "1"));
         //System.out.println(numToHanStr(16));
 
-        Map map = new HashMap<>(16);
-        map.put("aa_1", true);
-        map.put("aa_2", true);
-        map.put("bb_3", true);
-        map.put("bb_4", true);
-        iteratorRemove(map, "aa_");
+        //Map map = new HashMap<>(16);
+        //map.put("aa_1", true);
+        //map.put("aa_2", true);
+        //map.put("bb_3", true);
+        //map.put("bb_4", true);
+        //iteratorRemove(map, "aa_");
+        //System.out.println(gson.toJson(map));
 
-        System.out.println(gson.toJson(map));
+        System.out.println(getNumbers2("1.8%&nbsp;↑"));
     }
 }

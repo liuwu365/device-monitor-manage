@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.device.dao.HouseTrendMapper">
+    <resultMap id="BaseResultMap" type="com.device.api.entity.HouseTrend">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="area" jdbcType="VARCHAR" property="area"/>
+        <result column="new_house_price" jdbcType="INTEGER" property="newHousePrice"/>
+        <result column="new_huanbi" jdbcType="TINYINT" property="newHuanbi"/>
+        <result column="new_huanbi_percent" jdbcType="DOUBLE" property="newHuanbiPercent"/>
+        <result column="new_tongbi" jdbcType="TINYINT" property="newTongbi"/>
+        <result column="new_tonbi_percent" jdbcType="DOUBLE" property="newTonbiPercent"/>
+        <result column="old_house_price" jdbcType="INTEGER" property="oldHousePrice"/>
+        <result column="old_huanbi" jdbcType="TINYINT" property="oldHuanbi"/>
+        <result column="old_huanbi_percent" jdbcType="DOUBLE" property="oldHuanbiPercent"/>
+        <result column="old_tongbi" jdbcType="TINYINT" property="oldTongbi"/>
+        <result column="old_tongbi_percent" jdbcType="DOUBLE" property="oldTongbiPercent"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, area, new_house_price, new_huanbi, new_huanbi_percent, new_tongbi, new_tonbi_percent,
+        old_house_price, old_huanbi, old_huanbi_percent, old_tongbi, old_tongbi_percent,
+        create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from house_trend
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM house_trend
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.device.api.entity.HouseTrend">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into house_trend (area, new_house_price, new_huanbi,
+        new_huanbi_percent, new_tongbi, new_tonbi_percent,
+        old_house_price, old_huanbi, old_huanbi_percent,
+        old_tongbi, old_tongbi_percent, create_time,
+        update_time)
+        values (#{area,jdbcType=VARCHAR}, #{newHousePrice,jdbcType=INTEGER}, #{newHuanbi,jdbcType=TINYINT},
+        #{newHuanbiPercent,jdbcType=DOUBLE}, #{newTongbi,jdbcType=TINYINT}, #{newTonbiPercent,jdbcType=DOUBLE},
+        #{oldHousePrice,jdbcType=INTEGER}, #{oldHuanbi,jdbcType=TINYINT}, #{oldHuanbiPercent,jdbcType=DOUBLE},
+        #{oldTongbi,jdbcType=TINYINT}, #{oldTongbiPercent,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP},
+        #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.device.api.entity.HouseTrend">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into house_trend
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="area != null">
+                area,
+            </if>
+            <if test="newHousePrice != null">
+                new_house_price,
+            </if>
+            <if test="newHuanbi != null">
+                new_huanbi,
+            </if>
+            <if test="newHuanbiPercent != null">
+                new_huanbi_percent,
+            </if>
+            <if test="newTongbi != null">
+                new_tongbi,
+            </if>
+            <if test="newTonbiPercent != null">
+                new_tonbi_percent,
+            </if>
+            <if test="oldHousePrice != null">
+                old_house_price,
+            </if>
+            <if test="oldHuanbi != null">
+                old_huanbi,
+            </if>
+            <if test="oldHuanbiPercent != null">
+                old_huanbi_percent,
+            </if>
+            <if test="oldTongbi != null">
+                old_tongbi,
+            </if>
+            <if test="oldTongbiPercent != null">
+                old_tongbi_percent,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="area != null">
+                #{area,jdbcType=VARCHAR},
+            </if>
+            <if test="newHousePrice != null">
+                #{newHousePrice,jdbcType=INTEGER},
+            </if>
+            <if test="newHuanbi != null">
+                #{newHuanbi,jdbcType=TINYINT},
+            </if>
+            <if test="newHuanbiPercent != null">
+                #{newHuanbiPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="newTongbi != null">
+                #{newTongbi,jdbcType=TINYINT},
+            </if>
+            <if test="newTonbiPercent != null">
+                #{newTonbiPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="oldHousePrice != null">
+                #{oldHousePrice,jdbcType=INTEGER},
+            </if>
+            <if test="oldHuanbi != null">
+                #{oldHuanbi,jdbcType=TINYINT},
+            </if>
+            <if test="oldHuanbiPercent != null">
+                #{oldHuanbiPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="oldTongbi != null">
+                #{oldTongbi,jdbcType=TINYINT},
+            </if>
+            <if test="oldTongbiPercent != null">
+                #{oldTongbiPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.device.api.entity.HouseTrend">
+        update house_trend
+        <set>
+            <if test="area != null">
+                area = #{area,jdbcType=VARCHAR},
+            </if>
+            <if test="newHousePrice != null">
+                new_house_price = #{newHousePrice,jdbcType=INTEGER},
+            </if>
+            <if test="newHuanbi != null">
+                new_huanbi = #{newHuanbi,jdbcType=TINYINT},
+            </if>
+            <if test="newHuanbiPercent != null">
+                new_huanbi_percent = #{newHuanbiPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="newTongbi != null">
+                new_tongbi = #{newTongbi,jdbcType=TINYINT},
+            </if>
+            <if test="newTonbiPercent != null">
+                new_tonbi_percent = #{newTonbiPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="oldHousePrice != null">
+                old_house_price = #{oldHousePrice,jdbcType=INTEGER},
+            </if>
+            <if test="oldHuanbi != null">
+                old_huanbi = #{oldHuanbi,jdbcType=TINYINT},
+            </if>
+            <if test="oldHuanbiPercent != null">
+                old_huanbi_percent = #{oldHuanbiPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="oldTongbi != null">
+                old_tongbi = #{oldTongbi,jdbcType=TINYINT},
+            </if>
+            <if test="oldTongbiPercent != null">
+                old_tongbi_percent = #{oldTongbiPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.device.api.entity.HouseTrend">
+        UPDATE house_trend
+        SET area               = #{area,jdbcType=VARCHAR},
+            new_house_price    = #{newHousePrice,jdbcType=INTEGER},
+            new_huanbi         = #{newHuanbi,jdbcType=TINYINT},
+            new_huanbi_percent = #{newHuanbiPercent,jdbcType=DOUBLE},
+            new_tongbi         = #{newTongbi,jdbcType=TINYINT},
+            new_tonbi_percent  = #{newTonbiPercent,jdbcType=DOUBLE},
+            old_house_price    = #{oldHousePrice,jdbcType=INTEGER},
+            old_huanbi         = #{oldHuanbi,jdbcType=TINYINT},
+            old_huanbi_percent = #{oldHuanbiPercent,jdbcType=DOUBLE},
+            old_tongbi         = #{oldTongbi,jdbcType=TINYINT},
+            old_tongbi_percent = #{oldTongbiPercent,jdbcType=DOUBLE},
+            create_time        = #{createTime,jdbcType=TIMESTAMP},
+            update_time        = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+    <resultMap id="BaseResultMap" type="com.device.api.entity.HouseTrend">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="area" jdbcType="VARCHAR" property="area"/>
+        <result column="new_house_price" jdbcType="INTEGER" property="newHousePrice"/>
+        <result column="old_house_price" jdbcType="INTEGER" property="oldHousePrice"/>
+        <result column="trend" jdbcType="TINYINT" property="trend"/>
+        <result column="trend_percent" jdbcType="DOUBLE" property="trendPercent"/>
+        <result column="trend_old" jdbcType="TINYINT" property="trendOld"/>
+        <result column="trend_old_percent" jdbcType="DOUBLE" property="trendOldPercent"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, area, new_house_price, old_house_price, trend, trend_percent, trend_old, trend_old_percent,
+        create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from house_trend
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM house_trend
+        WHERE id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.device.api.entity.HouseTrend">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into house_trend (area, new_house_price, old_house_price,
+        trend, trend_percent, trend_old,
+        trend_old_percent, create_time, update_time
+        )
+        values (#{area,jdbcType=VARCHAR}, #{newHousePrice,jdbcType=INTEGER}, #{oldHousePrice,jdbcType=INTEGER},
+        #{trend,jdbcType=TINYINT}, #{trendPercent,jdbcType=DOUBLE}, #{trendOld,jdbcType=TINYINT},
+        #{trendOldPercent,jdbcType=DOUBLE}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.device.api.entity.HouseTrend">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into house_trend
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="area != null">
+                area,
+            </if>
+            <if test="newHousePrice != null">
+                new_house_price,
+            </if>
+            <if test="oldHousePrice != null">
+                old_house_price,
+            </if>
+            <if test="trend != null">
+                trend,
+            </if>
+            <if test="trendPercent != null">
+                trend_percent,
+            </if>
+            <if test="trendOld != null">
+                trend_old,
+            </if>
+            <if test="trendOldPercent != null">
+                trend_old_percent,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="area != null">
+                #{area,jdbcType=VARCHAR},
+            </if>
+            <if test="newHousePrice != null">
+                #{newHousePrice,jdbcType=INTEGER},
+            </if>
+            <if test="oldHousePrice != null">
+                #{oldHousePrice,jdbcType=INTEGER},
+            </if>
+            <if test="trend != null">
+                #{trend,jdbcType=TINYINT},
+            </if>
+            <if test="trendPercent != null">
+                #{trendPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="trendOld != null">
+                #{trendOld,jdbcType=TINYINT},
+            </if>
+            <if test="trendOldPercent != null">
+                #{trendOldPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.device.api.entity.HouseTrend">
+        update house_trend
+        <set>
+            <if test="area != null">
+                area = #{area,jdbcType=VARCHAR},
+            </if>
+            <if test="newHousePrice != null">
+                new_house_price = #{newHousePrice,jdbcType=INTEGER},
+            </if>
+            <if test="oldHousePrice != null">
+                old_house_price = #{oldHousePrice,jdbcType=INTEGER},
+            </if>
+            <if test="trend != null">
+                trend = #{trend,jdbcType=TINYINT},
+            </if>
+            <if test="trendPercent != null">
+                trend_percent = #{trendPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="trendOld != null">
+                trend_old = #{trendOld,jdbcType=TINYINT},
+            </if>
+            <if test="trendOldPercent != null">
+                trend_old_percent = #{trendOldPercent,jdbcType=DOUBLE},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.device.api.entity.HouseTrend">
+        UPDATE house_trend
+        SET area              = #{area,jdbcType=VARCHAR},
+            new_house_price   = #{newHousePrice,jdbcType=INTEGER},
+            old_house_price   = #{oldHousePrice,jdbcType=INTEGER},
+            trend             = #{trend,jdbcType=TINYINT},
+            trend_percent     = #{trendPercent,jdbcType=DOUBLE},
+            trend_old         = #{trendOld,jdbcType=TINYINT},
+            trend_old_percent = #{trendOldPercent,jdbcType=DOUBLE},
+            create_time       = #{createTime,jdbcType=TIMESTAMP},
+            update_time       = #{updateTime,jdbcType=TIMESTAMP}
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>
