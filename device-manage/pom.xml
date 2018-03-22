@@ -9,8 +9,8 @@
     <name>device-manage</name>
     <url>http://maven.apache.org</url>
 
+    <!-- 阿里云环境 -->
     <repositories>
-        <!-- 阿里云环境 -->
         <repository>
             <id>snapshots</id>
             <name>snapshots</name>
@@ -31,29 +31,6 @@
             <name>Opensymphony Releases</name>
             <url>https://oss.sonatype.org/content/repositories/opensymphony-releases</url>
         </repository>
-
-        <!-- 本地环境
-        <repository>
-            <id>snapshots</id>
-            <name>snapshots</name>
-            <url>http://192.168.1.12:8081/nexus/content/repositories/snapshots</url>
-        </repository>
-        <repository>
-            <id>releases</id>
-            <name>releases</name>
-            <url>http://192.168.1.12:8081/nexus/content/repositories/releases</url>
-        </repository>
-        <repository>
-            <id>public</id>
-            <name>public</name>
-            <url>http://192.168.1.12:8081/nexus/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>Opensymphony Releases</id>
-            <name>Opensymphony Releases</name>
-            <url>https://oss.sonatype.org/content/repositories/opensymphony-releases</url>
-        </repository>
-        -->
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -89,7 +66,7 @@
         <spring.boot.version>1.3.2.RELEASE</spring.boot.version>
         <spring.boot.devtools.version>1.3.2.RELEASE</spring.boot.devtools.version>
         <httpcomponents.version>4.5.5</httpcomponents.version>
-        <spring.version>4.2.3.RELEASE</spring.version>
+        <!--<spring.version>4.2.3.RELEASE</spring.version>-->
         <shiro.version>1.2.4</shiro.version>
         <argLine>-Dfile.encoding=UTF-8</argLine>
     </properties>
@@ -110,7 +87,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
 
         <!--<dependency>
             <groupId>org.springframework.boot</groupId>
@@ -202,12 +178,12 @@
         <!--<scope>compile</scope>-->
         <!--</dependency>-->
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${spring.version}</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency>-->
 
         <!--<dependency>-->
         <!--<groupId>org.springframework</groupId>-->
@@ -278,12 +254,6 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.5</version>
         </dependency>
-
-        <!--<dependency>-->
-        <!--<groupId>game-financial</groupId>-->
-        <!--<artifactId>game-financial</artifactId>-->
-        <!--<version>1.0-SNAPSHOT</version>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>redis.clients</groupId>
@@ -623,7 +593,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                    <finalName>esport-manage</finalName>
+                    <finalName>device-manage</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptors>
                         <descriptor>assembly.xml</descriptor>

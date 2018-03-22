@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      layout:decorator="model/head">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="renderer" content="webkit" />
+    <title>MySelf管理后台</title>
+    <script type="text/javascript">
+        //<![CDATA[
+        $(function () {
+            $("#house").click();
+            showSide("房价趋势列表");
+            layui.use('laydate', function () {
+                var laydate = layui.laydate;
+                laydate.render({elem: '.startDate', type: 'date'});
+                laydate.render({elem: '.endDate', type: 'date'});
+            });
+            $(".getNewData").click(function () {
+                var index = layer.msg('加载中', {icon: 16});
+                $.get("/houseTrend/getNewData.json", function (data) {
+                    if (data.code == 200) {
+                        layer.close(index);
+                        layer.msg(data.msg, {time: 1000}, function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        layer.close(index);
+                        layer.msg(data.msg, {time: 3000});
+                    }
+                });
+            });
+        });
+        //]]>
+    </script>
+</head>
+<body>
+<div class="container" layout:fragment="content">
+    <div class="bread">
+        <i class="icon-home"></i>
+        <a href="#">房价管理</a><span>></span>
+        <a href="/houseTrend/houseTrend_list.html">房价趋势列表</a><span>></span>
+        <em>房价趋势列表</em>
+    </div>
+    <div class="main wrapper">
+        <div class="wrap">
+            <form action="/houseTrend/houseTrend_list.html" method="post" class="form-inline" id="searchForm">
+                <div class="form-group">
+                    区域： <input type="text" name="filter['area']" class="form-control" placeholder="区域搜索" th:value="${page.filter['area']}" />
+                    时间：<input type="text" name="filter['startDate']" class="startDate form-control" placeholder="开始时间" th:value="${page.filter['startDate']}" />
+                    <input type="text" name="filter['endDate']" class="endDate form-control" placeholder="结束时间" th:value="${page.filter['endDate']}" />
+                    <button type="submit" onclick="resetPage();" class="btn btn-default">搜索</button>
+                </div>
+                <input type="hidden" id="page" name="page" th:value="${page.page}" />
+                <input type="hidden" name="totalPage" th:value="${page.totalPage}" />
+                <div class="pull-right">
+                    <a href="#" class="getNewData btn btn-success">获取最新数据</a>
+                    <a href="javascript:;" class="btn btn-default" onclick="location.reload();">刷新</a>
+                </div>
+            </form>
+        </div>
+        <div class="container-list">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <td>序号ID</td>
+                        <td>区域</td>
+                        <td>日期</td>
+                        <td>新房均价
+                            <a href="javascript:;">
+                                <img src="/images/confirm.png" class="imgTip" data-toggle="tooltip" data-placement="top" title="单位：元/平米" />
+                            </a>
+                        </td>
+                        <td>新房环比趋势</td>
+                        <td>新房环比趋势比例</td>
+                        <td>新房同比趋势</td>
+                        <td>新房同比趋势比例</td>
+                        <td>二手房均价
+                            <a href="javascript:;">
+                                <img src="/images/confirm.png" class="imgTip" data-toggle="tooltip" data-placement="top" title="单位：元/平米" />
+                            </a>
+                        </td>
+                        <td>二手房环比趋势</td>
+                        <td>二手房环比趋势比例</td>
+                        <td>二手房同比趋势</td>
+                        <td>二手房同比趋势比例</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="h:${page.result}">
+                        <td th:text="${h.id}"></td>
+                        <td th:text="${h.area}"></td>
+                        <td th:text="${h.createTime!=null?#dates.format(h.createTime,'yyyy-MM-dd'):''}"></td>
+                        <td th:text="${h.newHousePrice}"></td>
+                        <td>
+                            <span th:if="${h.newHuanbi==0}">--</span>
+                            <span th:if="${h.newHuanbi==1}" class="label label-danger">上升</span>
+                            <span th:if="${h.newHuanbi==2}" class="label label-success">下降</span>
+                        </td>
+                        <td th:text="${h.newHuanbiPercent}"></td>
+                        <td>
+                            <span th:if="${h.newTongbi==0}">--</span>
+                            <span th:if="${h.newTongbi==1}" class="label label-danger">上升</span>
+                            <span th:if="${h.newTongbi==2}" class="label label-success">下降</span>
+                        </td>
+                        <td th:text="${h.newTonbiPercent}"></td>
+                        <td th:text="${h.oldHousePrice}"></td>
+                        <td>
+                            <span th:if="${h.oldHuanbi==0}">--</span>
+                            <span th:if="${h.oldHuanbi==1}" class="label label-danger">上升</span>
+                            <span th:if="${h.oldHuanbi==2}" class="label label-success">下降</span>
+                        </td>
+                        <td th:text="${h.oldHuanbiPercent}"></td>
+                        <td>
+                            <span th:if="${h.oldTongbi==0}">--</span>
+                            <span th:if="${h.oldTongbi==1}" class="label label-danger">上升</span>
+                            <span th:if="${h.oldTongbi==2}" class="label label-success">下降</span>
+                        </td>
+                        <td th:text="${h.oldTongbiPercent}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center">
+                <ul id="pageLimit"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

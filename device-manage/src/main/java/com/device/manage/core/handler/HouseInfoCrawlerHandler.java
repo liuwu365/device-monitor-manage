@@ -31,7 +31,7 @@ public class HouseInfoCrawlerHandler {
         getHouseInfoByCrawler();
     }
 
-    private static List<HouseTrend> getHouseInfoByCrawler() {
+    public static List<HouseTrend> getHouseInfoByCrawler() {
         List<HouseTrend> list = new ArrayList<>();
         System.out.println("======================================>开始抓取数据");
         String url = "http://shiyan.jiwu.com/fangjia/";
@@ -99,10 +99,19 @@ public class HouseInfoCrawlerHandler {
                     houseInfo.setOldTongbiPercent(getPercentValue(tongbi.text()));
                     houseInfo.setOldTongbi(trendType(tongbi.attr("class")).byteValue());
                 }
-                houseInfo.setCreateTime(new Date());
-                houseInfo.setUpdateTime(new Date());
+
                 list.add(houseInfo);
+                if ((i + 1) % 2 == 0) {
+                    list.get(i - 1).setOldHousePrice(houseInfo.getOldHousePrice());
+                    list.get(i - 1).setOldHuanbiPercent(houseInfo.getOldHuanbiPercent());
+                    list.get(i - 1).setOldHuanbi(houseInfo.getOldHuanbi());
+                    list.get(i - 1).setOldTongbiPercent(houseInfo.getOldTongbiPercent());
+                    list.get(i - 1).setOldTongbi(houseInfo.getOldTongbi());
+                    list.get(i - 1).setCreateTime(new Date());
+                    list.get(i - 1).setUpdateTime(new Date());
+                }
             }
+            list.removeIf(s -> CheckUtil.isEmpty(s.getArea()));
             logger.info("爬虫结果:{}", gson.toJson(list));
         } catch (Exception e) {
             e.printStackTrace();
