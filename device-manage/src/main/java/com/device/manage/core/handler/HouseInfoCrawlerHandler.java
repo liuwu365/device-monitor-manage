@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 房价趋势信息爬虫
@@ -112,6 +114,12 @@ public class HouseInfoCrawlerHandler {
                 }
             }
             list.removeIf(s -> CheckUtil.isEmpty(s.getArea()));
+
+            //写法2
+            //List afterFilterLists = list.stream()
+            //        .filter(s -> CheckUtil.isEmpty(s.getArea()))
+            //        .collect(Collectors.toList());
+
             logger.info("爬虫结果:{}", gson.toJson(list));
         } catch (Exception e) {
             e.printStackTrace();
